@@ -80,7 +80,6 @@ func (chain33Relayer *Relayer4Chain33) ImportPrivateKey(passphrase, privateKeySt
 	return chain33Relayer.db.SetSync(chain33AccountKey, encodedInfo)
 }
 
-
 func (chain33Relayer *Relayer4Chain33) ImportPassPin(passphrase, keyPasspinStr, addr string) error {
 	chain33Relayer.rwLock.Lock()
 	chain33Relayer.keyPasspin = keyPasspinStr

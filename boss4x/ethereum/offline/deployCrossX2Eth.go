@@ -10,14 +10,14 @@ import (
 
 	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
-	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
 	"github.com/spf13/cobra"
 )
 

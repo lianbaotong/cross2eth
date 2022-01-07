@@ -12,15 +12,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
-	"github.com/lianbaotong/cross2eth/contracts/test/setup"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/contracts/test/setup"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	"github.com/stretchr/testify/require"
 )
 

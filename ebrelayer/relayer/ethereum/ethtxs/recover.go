@@ -3,9 +3,9 @@ package ethtxs
 import (
 	"errors"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 //RecoverContractHandler ...

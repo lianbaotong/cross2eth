@@ -56,10 +56,10 @@ type Relayer4Ethereum struct {
 	ethSender           common.Address
 	processWithDraw     bool
 	//硬件签名相关开始
-	signViaHsm          bool   //是否使用硬件签名
-	secp256k1Index      int    //硬件签名时的私钥索引号
-	keyPasspin          string //私钥使用授权码
-	getHsmRight         bool
+	signViaHsm     bool   //是否使用硬件签名
+	secp256k1Index int    //硬件签名时的私钥索引号
+	keyPasspin     string //私钥使用授权码
+	getHsmRight    bool
 	//硬件签名相关结束
 
 	unlockchan              chan int
@@ -737,16 +737,16 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		ethRelayer.getHsmRight = true
 	}
 
-	txPara := &ethtxs.TxPara2relayOracleClaim {
-		OracleInstance:ethRelayer.x2EthContracts.Oracle,
-		Client:ethRelayer.clientSpec,
-		Sender:ethRelayer.ethSender,
-		TokenOnEth: tokenAddr,
-		Claim:prophecyClaim,
-		PrivateKey:ethRelayer.privateKey4Ethereum,
-		Addr2TxNonce:ethRelayer.Addr2TxNonce,
-		SignViaHsm:ethRelayer.signViaHsm,
-		Secp256k1Index:ethRelayer.secp256k1Index,
+	txPara := &ethtxs.TxPara2relayOracleClaim{
+		OracleInstance: ethRelayer.x2EthContracts.Oracle,
+		Client:         ethRelayer.clientSpec,
+		Sender:         ethRelayer.ethSender,
+		TokenOnEth:     tokenAddr,
+		Claim:          prophecyClaim,
+		PrivateKey:     ethRelayer.privateKey4Ethereum,
+		Addr2TxNonce:   ethRelayer.Addr2TxNonce,
+		SignViaHsm:     ethRelayer.signViaHsm,
+		Secp256k1Index: ethRelayer.secp256k1Index,
 	}
 
 	// Relay the Chain33Msg to the Ethereum network

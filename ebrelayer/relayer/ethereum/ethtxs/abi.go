@@ -3,8 +3,8 @@ package ethtxs
 import (
 	"strings"
 
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 )
 
 //const

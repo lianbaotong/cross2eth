@@ -5,8 +5,8 @@ import (
 	"math/big"
 
 	"github.com/33cn/chain33/common/log/log15"
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 )
 
 var (

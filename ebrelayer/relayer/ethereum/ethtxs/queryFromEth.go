@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/ethereum/go-ethereum/common"
 	bep20 "github.com/lianbaotong/cross2eth/contracts/bep20/generated"
 	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 //GetOperator ...

@@ -3,8 +3,8 @@ package ethtxs
 import (
 	"math/big"
 
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 )
 
 //const ...

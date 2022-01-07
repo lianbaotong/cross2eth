@@ -9,14 +9,14 @@ import (
 
 	"github.com/ethereum/go-ethereum"
 
-	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
-	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
-	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/spf13/cobra"
 )
 

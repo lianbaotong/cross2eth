@@ -9,11 +9,11 @@ import (
 	"github.com/33cn/chain33/common/address"
 	"github.com/33cn/chain33/rpc/jsonclient"
 	rpctypes "github.com/33cn/chain33/rpc/types"
+	ethTypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
-	ethTypes "github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/spf13/cobra"
 )
 

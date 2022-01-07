@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	evmAbi "github.com/33cn/plugin/plugin/dapp/evm/executor/abi"
 	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
 	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
-	evmAbi "github.com/33cn/plugin/plugin/dapp/evm/executor/abi"
 	"github.com/spf13/cobra"
 )
 

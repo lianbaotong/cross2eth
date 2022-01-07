@@ -6,15 +6,15 @@ import (
 	"math/big"
 	"strings"
 
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	bep20 "github.com/lianbaotong/cross2eth/contracts/bep20/generated"
 	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
 	tetherUSDT "github.com/lianbaotong/cross2eth/contracts/usdt/generated"
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/spf13/cobra"
 )
 

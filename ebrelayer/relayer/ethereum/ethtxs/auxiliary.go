@@ -8,16 +8,16 @@ import (
 	"strings"
 
 	chain33Address "github.com/33cn/chain33/common/address"
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
-	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
-	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 //NewProphecyClaimPara ...

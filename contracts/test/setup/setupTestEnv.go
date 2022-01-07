@@ -6,9 +6,6 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -17,6 +14,9 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/params"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
 )
 
 //PrepareTestEnv ...

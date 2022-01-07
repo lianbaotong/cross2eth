@@ -13,9 +13,9 @@ import (
 
 	"github.com/33cn/chain33/common/log"
 	"github.com/33cn/chain33/pluginmgr"
+	tml "github.com/BurntSushi/toml"
 	"github.com/lianbaotong/cross2eth/ebcli/buildflags"
 	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
-	tml "github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
 )
 

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"math/big"
 
-	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	chain33EvmCommon "github.com/33cn/plugin/plugin/dapp/evm/executor/vm/common"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 type Chain33EvmEvent int

@@ -5,8 +5,8 @@ import (
 
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 
-	chain33Evm "github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	chain33Evm "github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
 )
 
 func (relayer *Relayer4Chain33) prePareSubscribeEvent() {

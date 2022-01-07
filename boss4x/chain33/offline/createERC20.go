@@ -6,11 +6,11 @@ import (
 
 	"github.com/33cn/chain33/common/address"
 	"github.com/33cn/chain33/system/crypto/secp256k1"
-	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
-	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
 	"github.com/33cn/plugin/plugin/dapp/dex/utils"
 	evmAbi "github.com/33cn/plugin/plugin/dapp/evm/executor/abi"
 	"github.com/33cn/plugin/plugin/dapp/evm/executor/vm/common"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
+	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
 	"github.com/spf13/cobra"
 )
 

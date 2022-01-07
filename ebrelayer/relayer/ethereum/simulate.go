@@ -4,11 +4,11 @@ import (
 	"math/big"
 
 	"github.com/33cn/chain33/common/address"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
-	ethcommon "github.com/ethereum/go-ethereum/common"
 )
 
 var clientChainID = int64(0)

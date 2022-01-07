@@ -8,9 +8,6 @@ import (
 	"testing"
 
 	chain33Common "github.com/33cn/chain33/common"
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -18,6 +15,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
