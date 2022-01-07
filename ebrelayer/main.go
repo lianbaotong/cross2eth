@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"io"
 	"net"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/33cn/chain33/common"
 	dbm "github.com/33cn/chain33/common/db"
 	logf "github.com/33cn/chain33/common/log"
 	"github.com/33cn/chain33/common/log/log15"
@@ -91,10 +93,12 @@ func main() {
 			Chain33MsgChan:     chain33MsgChan,
 			ProcessWithDraw:    cfg.ProcessWithDraw,
 			Name:               cfg.EthRelayerCfg[i].EthChainName,
+			ValidatorAddr:      cfg.EthereumValidator,
+			SignViaHsm:         cfg.SignViaHsm,
+			Secp256k1Index:     int(cfg.Secp256K1KeyIndex4Eth),
 		}
 		ethRelayerService := ethRelayer.StartEthereumRelayer(ethStartPara)
 		ethRelayerServices[ethStartPara.Name] = ethRelayerService
-
 	}
 
 	//启动chain33中继器
@@ -108,6 +112,24 @@ func main() {
 		Chain33MsgChan:     chain33MsgChan2Eths,
 		ChainID:            cfg.Chain33RelayerCfg.ChainID4Chain33,
 		ProcessWithDraw:    cfg.ProcessWithDraw,
+		SignViaHsm:         cfg.SignViaHsm,
+		Secp256k1Index:     int(cfg.Secp256K1KeyIndex4Chain33),
+	}
+	if cfg.SignViaHsm {
+		if cfg.Secp256K1KeyIndex4Eth < 1 || cfg.Secp256K1KeyIndex4Eth > 64 {
+			panic("Invalid Secp256K1 Key index for Ethereum")
+		}
+		if cfg.Secp256K1KeyIndex4Chain33 < 1 || cfg.Secp256K1KeyIndex4Chain33 > 64 {
+			panic("Invalid Secp256K1 Key index for HSM")
+		}
+		if 0 == len(cfg.Chain33PubKey) {
+			panic("No Public key is configured ")
+		}
+		chain33StartPara.Chain33PubKey, _ = common.FromHex(cfg.Chain33PubKey)
+		if err := adapter.OpenHSMSession(); nil != err {
+			panic("Failed to Open HSM Session due to" + err.Error())
+		}
+		mainlog.Info("Succeed to Open HSM Session")
 	}
 	chain33RelayerService := chain33Relayer.StartChain33Relayer(chain33StartPara)
 

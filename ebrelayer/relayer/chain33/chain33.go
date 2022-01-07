@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"math/big"
 	"os"
 	"strings"
@@ -21,13 +22,13 @@ import (
 	"github.com/33cn/chain33/rpc/jsonclient"
 	rpctypes "github.com/33cn/chain33/rpc/types"
 	chain33Types "github.com/33cn/chain33/types"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	ethCommon "github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	syncTx "github.com/lianbaotong/cross2eth/ebrelayer/relayer/chain33/transceiver/sync"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	ethCommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 var relayerLog = log.New("module", "chain33_relayer")
@@ -64,6 +65,11 @@ type Relayer4Chain33 struct {
 	symbol2Addr               map[string]string
 	bridgeSymbol2EthChainName map[string]string //在chain33上发行的跨链token的名称到以太坊链的名称映射
 	processWithDraw           bool
+	keyPasspin                string //私钥使用授权码
+	getHsmRight               bool
+	signViaHsm                bool
+	secp256k1Index            int
+	chain33PubKey             []byte
 }
 
 type Chain33StartPara struct {
@@ -76,6 +82,9 @@ type Chain33StartPara struct {
 	Chain33MsgChan     map[string]chan<- *events.Chain33Msg
 	ChainID            int32
 	ProcessWithDraw    bool
+	SignViaHsm         bool
+	Secp256k1Index     int
+	Chain33PubKey      []byte
 }
 
 // StartChain33Relayer : initializes a relayer which witnesses events on the chain33 network and relays them to Ethereum
@@ -94,6 +103,9 @@ func StartChain33Relayer(startPara *Chain33StartPara) *Relayer4Chain33 {
 		totalTx4RelayEth2chai33: 0,
 		symbol2Addr:             make(map[string]string),
 		processWithDraw:         startPara.ProcessWithDraw,
+		signViaHsm:              startPara.SignViaHsm,
+		secp256k1Index:          startPara.Secp256k1Index,
+		chain33PubKey:           startPara.Chain33PubKey,
 	}
 
 	syncCfg := &ebTypes.SyncTxReceiptConfig{
@@ -346,10 +358,26 @@ func (chain33Relayer *Relayer4Chain33) relayLockBurnToChain33(claim *ebTypes.Eth
 	amountBytes := bigAmount.Bytes()
 	claimID := crypto.Keccak256Hash(nonceBytes, []byte(claim.EthereumSender), []byte(claim.Chain33Receiver), []byte(claim.Symbol), amountBytes)
 
+	var signature []byte
+	var err error
 	// Sign the hash using the active validator's private key
-	signature, err := utils.SignClaim4Evm(claimID, chain33Relayer.privateKey4Chain33_ecdsa)
-	if nil != err {
-		panic("SignClaim4Evm due to" + err.Error())
+	if chain33Relayer.signViaHsm {
+		if !chain33Relayer.getHsmRight {
+			if err := adapter.GetPrivateKeyAccessRight(chain33Relayer.keyPasspin, chain33Relayer.secp256k1Index); nil != err {
+				panic("Failed to GetPrivateKeyAccessRight via HSM due to" + err.Error())
+			}
+			chain33Relayer.getHsmRight = true
+		}
+		R, S, V, err := adapter.SignSecp256k1(utils.SoliditySHA3WithPrefix(claimID[:]), chain33Relayer.secp256k1Index)
+		if nil != err {
+			panic("Failed to Sign Secp256k1 via HSM due to" + err.Error())
+		}
+		signature = adapter.MakeRSVsignature(R, S, V)
+	} else {
+		signature, err = utils.SignClaim4Evm(claimID, chain33Relayer.privateKey4Chain33_ecdsa)
+		if nil != err {
+			panic("SignClaim4Evm due to" + err.Error())
+		}
 	}
 
 	var tokenAddr string
@@ -431,7 +459,8 @@ func (chain33Relayer *Relayer4Chain33) relayLockBurnToChain33(claim *ebTypes.Eth
 	relayerLog.Info("relayLockBurnToChain33", "parameter", parameter)
 
 	claim.ChainName = chain33Relayer.chainName
-	txhash, err := relayEvmTx2Chain33(chain33Relayer.privateKey4Chain33, claim, parameter, chain33Relayer.rpcLaddr, chain33Relayer.oracleAddr)
+	txhash, err := relayEvmTx2Chain33(chain33Relayer.signViaHsm, chain33Relayer.secp256k1Index, chain33Relayer.chain33PubKey,
+		chain33Relayer.privateKey4Chain33, claim, parameter, chain33Relayer.rpcLaddr, chain33Relayer.oracleAddr)
 	if err != nil {
 		relayerLog.Error("relayLockBurnToChain33", "Failed to RelayEvmTx2Chain33 due to:", err.Error(), "EthereumTxhash", claim.EthTxHash)
 		return

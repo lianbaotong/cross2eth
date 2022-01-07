@@ -4,12 +4,12 @@ go 1.15
 
 require (
 	github.com/33cn/chain33 v1.65.6-0.20211220075037-0e6ddce83502
-	github.com/33cn/plugin v1.65.3
+	github.com/33cn/plugin v1.65.5-0.20211228162005-9bff4e6aa8f6
+	github.com/33cn/plugincgo v0.0.0-20220106071149-9d31d191a099
 	github.com/BurntSushi/toml v0.3.1
-	github.com/OneOfOne/xxhash v1.2.5 // indirect
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/btcsuite/btcd v0.22.0-beta
-	github.com/ethereum/go-ethereum v1.10.0
+	github.com/ethereum/go-ethereum v1.10.13
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/golang/protobuf v1.5.2
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d

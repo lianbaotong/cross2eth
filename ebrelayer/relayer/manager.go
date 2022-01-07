@@ -11,11 +11,11 @@ import (
 	"github.com/33cn/chain33/common/log/log15"
 	rpctypes "github.com/33cn/chain33/rpc/types"
 	chain33Types "github.com/33cn/chain33/types"
+	lru "github.com/hashicorp/golang-lru"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/chain33"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum"
 	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
-	lru "github.com/hashicorp/golang-lru"
 )
 
 var (
@@ -197,13 +197,13 @@ func (manager *Manager) Unlock(passphase string, result *interface{}) error {
 		return errors.New("wrong passphase")
 	}
 
-	if err := manager.chain33Relayer.RestorePrivateKeys(passphase); nil != err {
+	if err := manager.chain33Relayer.RestorePrivateKeyOrPasspin(passphase); nil != err {
 		info := fmt.Sprintf("Failed to RestorePrivateKeys for chain33Relayer due to:%s", err.Error())
 		return errors.New(info)
 	}
 
 	for _, ethInt := range manager.ethRelayer {
-		if err := ethInt.RestorePrivateKeys(passphase); err != nil {
+		if err := ethInt.RestorePrivateKeyOrPasspin(passphase); err != nil {
 			info := fmt.Sprintf("Failed to RestorePrivateKeys for ethRelayer: %s due to:%s", ethInt.GetName(), err.Error())
 			return errors.New(info)
 		}

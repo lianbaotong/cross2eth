@@ -4,11 +4,14 @@ package types;
 option go_package = "../types";
 
 //以太坊账户信息
-// 	 privkey : 账户地址对应的私钥
+// 	 privkey : 账户地址对应的私钥,只是测试使用
 //	 addr :账户地址
+//  passpinOfprivkey: 硬件私钥使用授权码
 message Account4Relayer {
-    bytes privkey    = 1;
-    string addr      = 2;
+    bytes privkey             = 1;
+    string addr               = 2;
+    bytes passpinOfprivkey    = 3;
+    int32 passpinLen          = 4;
 }
 
 message ValidatorAddr4EthRelayer {

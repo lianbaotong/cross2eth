@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"math/big"
 	"math/rand"
 	"os"
@@ -13,8 +14,8 @@ import (
 
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 
-	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
 	btcec_secp256k1 "github.com/btcsuite/btcd/btcec"
+	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
 
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 
@@ -29,13 +30,13 @@ import (
 	rpctypes "github.com/33cn/chain33/rpc/types"
 	"github.com/33cn/chain33/system/crypto/secp256k1"
 	"github.com/33cn/chain33/types"
-	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
-	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	evmAbi "github.com/33cn/plugin/plugin/dapp/evm/executor/abi"
 	"github.com/33cn/plugin/plugin/dapp/evm/executor/vm/common/math"
 	evmtypes "github.com/33cn/plugin/plugin/dapp/evm/types"
 	ethSecp256k1 "github.com/ethereum/go-ethereum/crypto/secp256k1"
 	"github.com/golang/protobuf/proto"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 //DeployPara ...
@@ -66,6 +67,30 @@ func setChainID(chainID4Chain33 int32) {
 	chainID = chainID4Chain33
 }
 
+func createEvmTxSignViaHSM(secp256k1Index int, pub []byte, action proto.Message, execer, to string, fee int64) (string, error) {
+	tx := &types.Transaction{Execer: []byte(execer), Payload: types.Encode(action), Fee: fee, To: to, ChainID: chainID}
+
+	random := rand.New(rand.NewSource(time.Now().UnixNano()))
+	tx.Nonce = random.Int63()
+
+	//构建签名
+	tx.Signature = nil
+	data := types.Encode(tx)
+	r, s, _, err := adapter.SignSecp256k1(data, secp256k1Index)
+	if nil != err {
+		return "", err
+	}
+	signatureDER := adapter.MakeDERsignature(r, s)
+	tx.Signature = &types.Signature{
+		Ty:        types.SECP256K1,
+		Pubkey:    pub,
+		Signature: signatureDER,
+	}
+	txData := types.Encode(tx)
+	dataStr := common.ToHex(txData)
+	return dataStr, nil
+}
+
 func createEvmTx(privateKey chain33Crypto.PrivKey, action proto.Message, execer, to string, fee int64) string {
 	tx := &types.Transaction{Execer: []byte(execer), Payload: types.Encode(action), Fee: fee, To: to, ChainID: chainID}
 
@@ -78,7 +103,7 @@ func createEvmTx(privateKey chain33Crypto.PrivKey, action proto.Message, execer,
 	return dataStr
 }
 
-func relayEvmTx2Chain33(privateKey chain33Crypto.PrivKey, claim *ebrelayerTypes.EthBridgeClaim, parameter, rpcURL, oracleAddr string) (string, error) {
+func relayEvmTx2Chain33(signViaHsm bool, secp256k1Index int, pub []byte, privateKey chain33Crypto.PrivKey, claim *ebrelayerTypes.EthBridgeClaim, parameter, rpcURL, oracleAddr string) (string, error) {
 	note := fmt.Sprintf("relay with type:%s, chain33-receiver:%s, ethereum-sender:%s, symbol:%s, amout:%s, ethTxHash:%s",
 		events.ClaimType(claim.ClaimType).String(), claim.Chain33Receiver, claim.EthereumSender, claim.Symbol, claim.Amount, claim.EthTxHash)
 	_, packData, err := evmAbi.Pack(parameter, generated.OracleABI, false)
@@ -93,8 +118,16 @@ func relayEvmTx2Chain33(privateKey chain33Crypto.PrivKey, claim *ebrelayerTypes.
 	feeInt64 := int64(1 * 1e6)
 	wholeEvm := getExecerName(claim.ChainName)
 	toAddr := address.ExecAddress(wholeEvm)
-	//name表示发给哪个执行器
-	data := createEvmTx(privateKey, &action, wholeEvm, toAddr, feeInt64)
+
+	var data string
+	if signViaHsm {
+		data, err = createEvmTxSignViaHSM(secp256k1Index, pub, &action, wholeEvm, toAddr, feeInt64)
+		if nil != err {
+			return "", err
+		}
+	} else {
+		data = createEvmTx(privateKey, &action, wholeEvm, toAddr, feeInt64)
+	}
 	params := rpctypes.RawParm{
 		Token: "BTY",
 		Data:  data,

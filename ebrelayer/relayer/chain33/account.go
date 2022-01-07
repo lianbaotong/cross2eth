@@ -11,8 +11,8 @@ import (
 
 	chain33Types "github.com/33cn/chain33/types"
 	wcom "github.com/33cn/chain33/wallet/common"
-	x2ethTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	btcec_secp256k1 "github.com/btcsuite/btcd/btcec"
+	x2ethTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 var (
@@ -80,6 +80,30 @@ func (chain33Relayer *Relayer4Chain33) ImportPrivateKey(passphrase, privateKeySt
 	return chain33Relayer.db.SetSync(chain33AccountKey, encodedInfo)
 }
 
+
+func (chain33Relayer *Relayer4Chain33) ImportPassPin(passphrase, keyPasspinStr, addr string) error {
+	chain33Relayer.rwLock.Lock()
+	chain33Relayer.keyPasspin = keyPasspinStr
+	chain33Relayer.rwLock.Unlock()
+	chain33Relayer.unlockChan <- start
+
+	passpinLen := len(keyPasspinStr)
+	if passpinLen > 32 {
+		return errors.New("Passpin should not longer than 32")
+	}
+	key := make([]byte, 32)
+	copy(key, []byte(keyPasspinStr))
+
+	encryptered := wcom.CBCEncrypterPrivkey([]byte(passphrase), key)
+	account := &x2ethTypes.Account4Relayer{
+		Addr:             addr,
+		PasspinOfprivkey: encryptered,
+		PasspinLen:       int32(passpinLen),
+	}
+	encodedInfo := chain33Types.Encode(account)
+	return chain33Relayer.db.SetSync(chain33AccountKey, encodedInfo)
+}
+
 //StoreAccountWithNewPassphase ...
 func (chain33Relayer *Relayer4Chain33) StoreAccountWithNewPassphase(newPassphrase, oldPassphrase string) error {
 	accountInfo, err := chain33Relayer.db.Get(chain33AccountKey)
@@ -91,42 +115,56 @@ func (chain33Relayer *Relayer4Chain33) StoreAccountWithNewPassphase(newPassphras
 	if err := chain33Types.Decode(accountInfo, ethAccount); nil != err {
 		return err
 	}
-	decryptered := wcom.CBCDecrypterPrivkey([]byte(oldPassphrase), ethAccount.Privkey)
-	encryptered := wcom.CBCEncrypterPrivkey([]byte(newPassphrase), decryptered)
-	ethAccount.Privkey = encryptered
+	if chain33Relayer.signViaHsm {
+		decryptered := wcom.CBCDecrypterPrivkey([]byte(oldPassphrase), ethAccount.PasspinOfprivkey)
+		encryptered := wcom.CBCEncrypterPrivkey([]byte(newPassphrase), decryptered)
+		ethAccount.PasspinOfprivkey = encryptered
+	} else {
+		decryptered := wcom.CBCDecrypterPrivkey([]byte(oldPassphrase), ethAccount.Privkey)
+		encryptered := wcom.CBCEncrypterPrivkey([]byte(newPassphrase), decryptered)
+		ethAccount.Privkey = encryptered
+	}
+
 	encodedInfo := chain33Types.Encode(ethAccount)
 	return chain33Relayer.db.SetSync(chain33AccountKey, encodedInfo)
 }
 
-//RestorePrivateKeys ...
-func (chain33Relayer *Relayer4Chain33) RestorePrivateKeys(passPhase string) (err error) {
+//RestorePrivateKeyOrPasspin ...
+func (chain33Relayer *Relayer4Chain33) RestorePrivateKeyOrPasspin(passPhase string) (err error) {
 	accountInfo, err := chain33Relayer.db.Get(chain33AccountKey)
-	if nil == err {
-		Chain33Account := &x2ethTypes.Account4Relayer{}
-		if err := chain33Types.Decode(accountInfo, Chain33Account); nil == err {
-			decryptered := wcom.CBCDecrypterPrivkey([]byte(passPhase), Chain33Account.Privkey)
-			var driver secp256k1.Driver
-			priKey, err := driver.PrivKeyFromBytes(decryptered)
-			if nil != err {
-				errInfo := fmt.Sprintf("Failed to PrivKeyFromBytes due to:%s", err.Error())
-				relayerLog.Info("RestorePrivateKeys", "Failed to PrivKeyFromBytes:", err.Error())
-				return errors.New(errInfo)
-			}
-			chain33Relayer.rwLock.Lock()
-			chain33Relayer.privateKey4Chain33 = priKey
-			chain33Relayer.privateKey4Chain33_ecdsa, err = crypto.ToECDSA(priKey.Bytes())
-			if nil != err {
-				return err
-			}
-			chain33Relayer.rwLock.Unlock()
+	if nil != err {
+		//此处未能成功获取信息，就统一认为未设置过相关信息
+		relayerLog.Info("No private key or passpin saved for Relayer4Chain33")
+		return nil
+	}
+	Chain33Account := &x2ethTypes.Account4Relayer{}
+	if err := chain33Types.Decode(accountInfo, Chain33Account); nil != err {
+		return err
+	}
+	if !chain33Relayer.signViaHsm {
+		decryptered := wcom.CBCDecrypterPrivkey([]byte(passPhase), Chain33Account.Privkey)
+		var driver secp256k1.Driver
+		priKey, err := driver.PrivKeyFromBytes(decryptered)
+		if nil != err {
+			errInfo := fmt.Sprintf("Failed to PrivKeyFromBytes due to:%s", err.Error())
+			relayerLog.Info("RestorePrivateKeys", "Failed to PrivKeyFromBytes:", err.Error())
+			return errors.New(errInfo)
 		}
-	}
-
-	chain33Relayer.rwLock.RLock()
-	if nil != chain33Relayer.privateKey4Chain33 {
+		chain33Relayer.rwLock.Lock()
+		chain33Relayer.privateKey4Chain33 = priKey
+		chain33Relayer.privateKey4Chain33_ecdsa, err = crypto.ToECDSA(priKey.Bytes())
+		if nil != err {
+			return err
+		}
 		chain33Relayer.unlockChan <- start
+		chain33Relayer.rwLock.Unlock()
+	} else {
+		decryptered := wcom.CBCDecrypterPrivkey([]byte(passPhase), Chain33Account.PasspinOfprivkey)
+		chain33Relayer.rwLock.Lock()
+		chain33Relayer.keyPasspin = string(decryptered[:Chain33Account.PasspinLen])
+		chain33Relayer.unlockChan <- start
+		chain33Relayer.rwLock.Unlock()
 	}
-	chain33Relayer.rwLock.RUnlock()
 
 	return nil
 }

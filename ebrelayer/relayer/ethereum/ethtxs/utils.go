@@ -3,17 +3,19 @@ package ethtxs
 import (
 	"context"
 	"crypto/ecdsa"
+	"encoding/hex"
 	"errors"
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"math/big"
 	"sync"
 	"time"
 
 	"github.com/ethereum/go-ethereum/core/types"
 
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
 )
 
 //EthTxStatus ...
@@ -184,6 +186,71 @@ func PrepareAuth4MultiEthereum(client ethinterface.EthClientSpec, privateKey *ec
 	}
 
 	return auth, nil
+}
+
+func PrepareAuthHsm(client ethinterface.EthClientSpec, keyIndex int, transactor common.Address, addr2TxNonce map[common.Address]*NonceMutex) (*bind.TransactOpts, error) {
+	if nil == client {
+		txslog.Error("PrepareAuth", "nil input parameter", "client", client)
+		return nil, errors.New("Eth client is not configured")
+	}
+
+	ctx := context.Background()
+	gasPrice, err := client.SuggestGasPrice(ctx)
+	if err != nil {
+		txslog.Error("PrepareAuth", "Failed to SuggestGasPrice due to:", err.Error())
+		return nil, errors.New("failed to get suggest gas price " + err.Error())
+	}
+
+	chainID, err := client.NetworkID(ctx)
+	if err != nil {
+		txslog.Error("PrepareAuth NetworkID", "err", err)
+		return nil, err
+	}
+
+	auth, err := newHSMTransactorWithChainID(keyIndex, transactor, chainID)
+	if err != nil {
+		txslog.Error("PrepareAuth NewKeyedTransactorWithChainID", "err", err, "chainID", chainID)
+		return nil, err
+	}
+	auth.Value = big.NewInt(0) // in wei
+	auth.GasLimit = GasLimit4Deploy
+	auth.GasPrice = gasPrice
+
+	if auth.Nonce, err = getNonce4MultiEth(transactor, client, addr2TxNonce); err != nil {
+		return nil, err
+	}
+
+	return auth, nil
+}
+
+// newHSMTransactorWithChainID is a utility method to easily create a transaction signer HSM
+func newHSMTransactorWithChainID(keyIndex int, from common.Address, chainID *big.Int) (*bind.TransactOpts, error) {
+	if chainID == nil {
+		return nil, bind.ErrNoChainID
+	}
+	signer := types.LatestSignerForChainID(chainID)
+	return &bind.TransactOpts{
+		From: from,
+		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
+			if address != from {
+				return nil, bind.ErrNotAuthorized
+			}
+			r, s, v, err := adapter.SignSecp256k1(signer.Hash(tx).Bytes(), keyIndex)
+			if err != nil {
+				return nil, err
+			}
+			signature := adapter.MakeRSVsignature(r, s, v)
+			txslog.Info("newHSMTransactorWithChainID", "signature", hex.EncodeToString(signature), "keyIndex", keyIndex)
+
+			signtx, err := tx.WithSignature(signer, signature)
+			if nil != err {
+				txslog.Error("newHSMTransactorWithChainID", "signer.Sender failed due to", err.Error())
+				return nil, err
+			}
+
+			return signtx, err
+		},
+	}, nil
 }
 
 func waitEthTxFinished(client ethinterface.EthClientSpec, txhash common.Hash, txName string) error {

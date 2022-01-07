@@ -127,7 +127,6 @@ func bindOrResumePush(cfg *relayerTypes.SyncTxReceiptConfig) {
 	for _, name := range cfg.Contracts {
 		contract[name] = true
 	}
-
 	params := types.PushSubscribeReq{
 		Name:          cfg.PushName,
 		URL:           cfg.PushHost,

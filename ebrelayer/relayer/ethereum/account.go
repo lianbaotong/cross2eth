@@ -4,15 +4,16 @@ import (
 	"crypto/ecdsa"
 	crand "crypto/rand"
 	"crypto/sha256"
+	"errors"
 	"io"
 
 	chain33Common "github.com/33cn/chain33/common"
 	chain33Types "github.com/33cn/chain33/types"
 	wcom "github.com/33cn/chain33/wallet/common"
-	x2ethTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
+	x2ethTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/pborman/uuid"
 )
 
@@ -104,11 +105,38 @@ func (ethRelayer *Relayer4Ethereum) ImportPrivateKey(passphrase, privateKeyStr s
 	return
 }
 
-//RestorePrivateKeys ...
-func (ethRelayer *Relayer4Ethereum) RestorePrivateKeys(passphrase string) error {
+func (ethRelayer *Relayer4Ethereum) ImportPrivateKeyPasspin(passphrase, privateKeyPasspin string) (err error) {
+	if nil != err {
+		return err
+	}
+	ethRelayer.keyPasspin = privateKeyPasspin
+	ethRelayer.unlockchan <- start
+
+	passpinLen := len(privateKeyPasspin)
+	if passpinLen > 32 {
+		return errors.New("Passpin should not longer than 32")
+	}
+	key := make([]byte, 32)
+	copy(key, privateKeyPasspin)
+
+	encryptered := wcom.CBCEncrypterPrivkey([]byte(passphrase), key)
+	ethAccount := &x2ethTypes.Account4Relayer{
+		PasspinOfprivkey: encryptered,
+		PasspinLen:       int32(passpinLen),
+		Addr:             ethRelayer.ethSender.String(),
+	}
+	encodedInfo := chain33Types.Encode(ethAccount)
+	err = ethRelayer.db.SetSync(ethAccountKey, encodedInfo)
+
+	return
+}
+
+//RestorePrivateKeyOrPasspin ...
+func (ethRelayer *Relayer4Ethereum) RestorePrivateKeyOrPasspin(passphrase string) error {
 	accountInfo, err := ethRelayer.db.Get(ethAccountKey)
 	if nil != err {
-		relayerLog.Info("No private key saved for Relayer4Chain33")
+		//此处未能成功获取信息，就统一认为未设置过相关信息
+		relayerLog.Info("No private key or passpin saved for Relayer4Ethereum")
 		return nil
 	}
 	ethAccount := &x2ethTypes.Account4Relayer{}
@@ -116,18 +144,27 @@ func (ethRelayer *Relayer4Ethereum) RestorePrivateKeys(passphrase string) error 
 		relayerLog.Info("RestorePrivateKeys", "Failed to decode due to:", err.Error())
 		return err
 	}
-	decryptered := wcom.CBCDecrypterPrivkey([]byte(passphrase), ethAccount.Privkey)
-	privateKey, err := crypto.ToECDSA(decryptered)
-	if nil != err {
-		relayerLog.Info("RestorePrivateKeys", "Failed to ToECDSA:", err.Error())
-		return err
+	if ethRelayer.signViaHsm {
+		decryptered := wcom.CBCDecrypterPrivkey([]byte(passphrase), ethAccount.PasspinOfprivkey)
+		ethRelayer.rwLock.Lock()
+		ethRelayer.keyPasspin = string(decryptered[:ethAccount.PasspinLen])
+		ethRelayer.rwLock.Unlock()
+		ethRelayer.unlockchan <- start
+	} else {
+		decryptered := wcom.CBCDecrypterPrivkey([]byte(passphrase), ethAccount.Privkey)
+		privateKey, err := crypto.ToECDSA(decryptered)
+		if nil != err {
+			relayerLog.Info("RestorePrivateKeys", "Failed to ToECDSA:", err.Error())
+			return err
+		}
+
+		ethRelayer.rwLock.Lock()
+		ethRelayer.privateKey4Ethereum = privateKey
+		ethRelayer.ethSender = crypto.PubkeyToAddress(privateKey.PublicKey)
+		ethRelayer.rwLock.Unlock()
+		ethRelayer.unlockchan <- start
 	}
 
-	ethRelayer.rwLock.Lock()
-	ethRelayer.privateKey4Ethereum = privateKey
-	ethRelayer.ethSender = crypto.PubkeyToAddress(privateKey.PublicKey)
-	ethRelayer.rwLock.Unlock()
-	ethRelayer.unlockchan <- start
 	return nil
 }
 

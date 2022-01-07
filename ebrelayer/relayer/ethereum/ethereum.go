@@ -14,6 +14,7 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"math"
 	"math/big"
 	"regexp"
@@ -27,18 +28,18 @@ import (
 	dbm "github.com/33cn/chain33/common/db"
 	log "github.com/33cn/chain33/common/log/log15"
 	chain33Types "github.com/33cn/chain33/types"
-	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
-	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
-	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
-	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 //Relayer4Ethereum ...
@@ -54,6 +55,12 @@ type Relayer4Ethereum struct {
 	privateKey4Ethereum *ecdsa.PrivateKey
 	ethSender           common.Address
 	processWithDraw     bool
+	//硬件签名相关开始
+	signViaHsm          bool   //是否使用硬件签名
+	secp256k1Index      int    //硬件签名时的私钥索引号
+	keyPasspin          string //私钥使用授权码
+	getHsmRight         bool
+	//硬件签名相关结束
 
 	unlockchan              chan int
 	maturityDegree          int32
@@ -103,6 +110,9 @@ type EthereumStartPara struct {
 	Chain33MsgChan     <-chan *events.Chain33Msg
 	ProcessWithDraw    bool
 	Name               string
+	ValidatorAddr      string
+	SignViaHsm         bool //是否使用硬件签名
+	Secp256k1Index     int  //硬件签名时的私钥索引号
 }
 
 type WithdrawFeeAndQuota struct {
@@ -131,6 +141,9 @@ func StartEthereumRelayer(startPara *EthereumStartPara) *Relayer4Ethereum {
 		symbol2Addr:             make(map[string]common.Address),
 		symbol2LockAddr:         make(map[string]ebTypes.TokenAddress),
 		Addr2TxNonce:            make(map[common.Address]*ethtxs.NonceMutex),
+		ethSender:               common.HexToAddress(startPara.ValidatorAddr),
+		signViaHsm:              startPara.SignViaHsm,
+		secp256k1Index:          startPara.Secp256k1Index,
 	}
 
 	registrAddrInDB, err := ethRelayer.getBridgeRegistryAddr()
@@ -353,10 +366,19 @@ func (ethRelayer *Relayer4Ethereum) proc() {
 	ctx := context.Background()
 	for range ethRelayer.unlockchan {
 		relayerLog.Info("Received ethRelayer.unlockchan")
-		ethRelayer.rwLock.RLock()
-		privateKey4Ethereum := ethRelayer.privateKey4Ethereum
-		ethRelayer.rwLock.RUnlock()
-		if nil != privateKey4Ethereum && nilAddr != ethRelayer.bridgeRegistryAddr {
+		privateInfoset := false
+		if ethRelayer.signViaHsm {
+			ethRelayer.rwLock.RLock()
+			privateInfoset = "" != ethRelayer.keyPasspin
+			ethRelayer.rwLock.RUnlock()
+
+		} else {
+			ethRelayer.rwLock.RLock()
+			privateInfoset = nil != ethRelayer.privateKey4Ethereum
+			ethRelayer.rwLock.RUnlock()
+		}
+
+		if privateInfoset && nilAddr != ethRelayer.bridgeRegistryAddr {
 			relayerLog.Info("Ethereum relayer starts to run...")
 			ethRelayer.prePareSubscribeEvent()
 			//向bridgeBank订阅事件
@@ -644,11 +666,11 @@ func (ethRelayer *Relayer4Ethereum) packBalanceOfData(_to common.Address) ([]byt
 	return abidata, nil
 }
 
-func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33Msg) {
+func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33Msg) error {
 	//对于通过代理人登录的中继器，不处理lock和burn事件
 	if ethRelayer.processWithDraw {
 		relayerLog.Info("handleLogLockBurn", "Needn't process lock and burn for this withdraw process specified validator", ethRelayer.ethSender)
-		return
+		return nil
 	}
 	relayerLog.Info("handleLogLockBurn", "Received chain33Msg", chain33Msg, "tx hash string", common.Bytes2Hex(chain33Msg.TxHash))
 
@@ -683,7 +705,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		if !exist {
 			//因为是burn操作，必须从允许lock的token地址中进行查询
 			relayerLog.Error("handleLogLockBurn", "Failed to fetch locked Token Info for symbol", prophecyClaim.Symbol)
-			return
+			return errors.New("ErrSymbolLockedFromEthereum")
 		}
 
 		tokenAddr = common.HexToAddress(burnFromChain33TokenInfo.Address)
@@ -707,10 +729,31 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		}
 	}
 
+	if !ethRelayer.getHsmRight && ethRelayer.signViaHsm {
+		if err := adapter.GetPrivateKeyAccessRight(ethRelayer.keyPasspin, ethRelayer.secp256k1Index); nil != err {
+			relayerLog.Error("handleLogLockBurn", "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
+			return errors.New("ErrGetPrivateKeyAccessRight")
+		}
+		ethRelayer.getHsmRight = true
+	}
+
+	txPara := &ethtxs.TxPara2relayOracleClaim {
+		OracleInstance:ethRelayer.x2EthContracts.Oracle,
+		Client:ethRelayer.clientSpec,
+		Sender:ethRelayer.ethSender,
+		TokenOnEth: tokenAddr,
+		Claim:prophecyClaim,
+		PrivateKey:ethRelayer.privateKey4Ethereum,
+		Addr2TxNonce:ethRelayer.Addr2TxNonce,
+		SignViaHsm:ethRelayer.signViaHsm,
+		Secp256k1Index:ethRelayer.secp256k1Index,
+	}
+
 	// Relay the Chain33Msg to the Ethereum network
-	txhash, err := ethtxs.RelayOracleClaimToEthereum(ethRelayer.x2EthContracts.Oracle, ethRelayer.clientSpec, ethRelayer.ethSender, tokenAddr, prophecyClaim, ethRelayer.privateKey4Ethereum, ethRelayer.Addr2TxNonce)
+	txhash, err := ethtxs.RelayOracleClaimToEthereum(txPara)
 	if nil != err {
-		panic("RelayOracleClaimToEthereum failed due to" + err.Error())
+		relayerLog.Error("handleLogLockBurn", "RelayOracleClaimToEthereum failed due to", err.Error())
+		return errors.New("ErrRelayOracleClaimToEthereum")
 	}
 	relayerLog.Info("handleLogLockBurn", "RelayOracleClaimToEthereum with tx hash", txhash)
 
@@ -718,7 +761,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 	txIndex := atomic.AddInt64(&ethRelayer.totalTxRelayFromChain33, 1)
 	if err = ethRelayer.updateTotalTxAmount2chain33(txIndex); nil != err {
 		relayerLog.Error("handleLogLockBurn", "Failed to RelayLockToChain33 due to:", err.Error())
-		return
+		return err
 	}
 	statics := &ebTypes.Chain33ToEthereumStatics{
 		EthTxstatus:      ebTypes.Tx_Status_Pending,
@@ -736,7 +779,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 	data := chain33Types.Encode(statics)
 	if err = ethRelayer.setLastestStatics(int32(chain33Msg.ClaimType), txIndex, data); nil != err {
 		relayerLog.Error("handleLogLockBurn", "Failed to RelayLockToChain33 due to:", err.Error())
-		return
+		return err
 	}
 	relayerLog.Info("RelayOracleClaimToEthereum::successful",
 		"txIndex", txIndex,
@@ -747,6 +790,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		"Amount", chain33Msg.Amount,
 		"EthereumReceiver", statics.EthereumReceiver,
 		"Chain33Sender", statics.Chain33Sender)
+	return nil
 }
 
 func (ethRelayer *Relayer4Ethereum) getCurrentHeight(ctx context.Context) (uint64, error) {
