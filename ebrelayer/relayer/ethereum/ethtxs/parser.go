@@ -11,8 +11,8 @@ package ethtxs
 
 import (
 	"github.com/33cn/chain33/common/address"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/events"
-	ebrelayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 // LogLockToEthBridgeClaim : parses and packages a LockEvent struct with a validator address in an EthBridgeClaim msg

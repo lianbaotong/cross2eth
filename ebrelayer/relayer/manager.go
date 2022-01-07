@@ -11,10 +11,10 @@ import (
 	"github.com/33cn/chain33/common/log/log15"
 	rpctypes "github.com/33cn/chain33/rpc/types"
 	chain33Types "github.com/33cn/chain33/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/chain33"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum"
-	relayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/utils"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/chain33"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum"
+	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 	lru "github.com/hashicorp/golang-lru"
 )
 

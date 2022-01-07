@@ -5,8 +5,8 @@ import (
 
 	"github.com/33cn/chain33/rpc/jsonclient"
 	rpctypes "github.com/33cn/chain33/rpc/types"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/utils"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 	"github.com/spf13/cobra"
 )
 

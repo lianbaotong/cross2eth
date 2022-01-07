@@ -8,7 +8,7 @@ package events
 import (
 	"math/big"
 
-	ebrelayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 )

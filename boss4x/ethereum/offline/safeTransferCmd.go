@@ -9,9 +9,9 @@ import (
 
 	"github.com/ethereum/go-ethereum"
 
-	erc20 "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/erc20/generated"
-	gnosis "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/gnosis/generated"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"

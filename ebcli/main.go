@@ -13,8 +13,8 @@ import (
 
 	"github.com/33cn/chain33/common/log"
 	"github.com/33cn/chain33/pluginmgr"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebcli/buildflags"
-	relayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/ebcli/buildflags"
+	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	tml "github.com/BurntSushi/toml"
 	"github.com/spf13/cobra"
 )

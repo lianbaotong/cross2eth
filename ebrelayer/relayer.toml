@@ -5,6 +5,11 @@ dbdriver="leveldb"
 dbPath="datadir"
 dbCache=64
 ProcessWithDraw=false
+SignViaHsm=false #使用硬件进行签名
+Secp256k1KeyIndex4Eth=1 #以太坊用户私钥索引号，有效范围[1,64]
+Secp256k1KeyIndex4Chain33=2 #以太坊用户私钥索引号，有效范围[1,64]
+Chain33PubKey="" #chain33验证人公钥
+EthereumValidator=""#以太坊验证人地址
 #以太坊链1的配置
 [[EthRelayerCfg]]
 EthChainName="Ethereum"

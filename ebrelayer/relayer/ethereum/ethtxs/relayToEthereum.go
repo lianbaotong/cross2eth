@@ -3,13 +3,13 @@ package ethtxs
 import (
 	"crypto/ecdsa"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/utils"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 
 	"github.com/33cn/chain33/common/log/log15"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 )

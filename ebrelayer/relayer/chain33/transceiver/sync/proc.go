@@ -7,7 +7,7 @@ import (
 
 	dbm "github.com/33cn/chain33/common/db"
 	"github.com/33cn/chain33/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/utils"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 )
 
 // SeqType

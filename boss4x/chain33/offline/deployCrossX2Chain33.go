@@ -8,8 +8,8 @@ import (
 
 	"github.com/33cn/chain33/common/address"
 	"github.com/33cn/chain33/system/crypto/secp256k1"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4chain33/generated"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/33cn/plugin/plugin/dapp/dex/utils"
 	evmAbi "github.com/33cn/plugin/plugin/dapp/evm/executor/abi"
 	"github.com/33cn/plugin/plugin/dapp/evm/executor/vm/common"

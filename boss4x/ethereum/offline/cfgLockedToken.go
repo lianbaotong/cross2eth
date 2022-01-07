@@ -5,9 +5,9 @@ import (
 	"math/big"
 	"strings"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/utils"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/spf13/cobra"

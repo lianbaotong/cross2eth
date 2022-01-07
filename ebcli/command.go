@@ -6,7 +6,7 @@ package main
 import (
 	"github.com/33cn/chain33/rpc/jsonclient"
 	rpctypes "github.com/33cn/chain33/rpc/types"
-	relayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/spf13/cobra"
 )
 

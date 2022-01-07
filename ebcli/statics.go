@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/33cn/chain33/rpc/jsonclient"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/spf13/cobra"
 )
 

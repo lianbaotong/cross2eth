@@ -9,7 +9,7 @@ import (
 	chain33Common "github.com/33cn/chain33/common"
 	chain33Types "github.com/33cn/chain33/types"
 	wcom "github.com/33cn/chain33/wallet/common"
-	x2ethTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	x2ethTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"

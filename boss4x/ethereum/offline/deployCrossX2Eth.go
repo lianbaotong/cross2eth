@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"strings"
 
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
-	gnosis "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/gnosis/generated"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"

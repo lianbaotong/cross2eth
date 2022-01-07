@@ -18,7 +18,7 @@ import (
 	l "github.com/33cn/chain33/common/log/log15"
 	"github.com/33cn/chain33/rpc/jsonclient"
 	"github.com/33cn/chain33/types"
-	relayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/rs/cors"
 )
 

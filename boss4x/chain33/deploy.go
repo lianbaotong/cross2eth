@@ -1,7 +1,7 @@
 package chain33
 
 import (
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/boss4x/chain33/offline"
+	"github.com/lianbaotong/cross2eth/boss4x/chain33/offline"
 	"github.com/spf13/cobra"
 )
 

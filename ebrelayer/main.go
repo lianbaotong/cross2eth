@@ -19,14 +19,14 @@ import (
 	logf "github.com/33cn/chain33/common/log"
 	"github.com/33cn/chain33/common/log/log15"
 	chain33Types "github.com/33cn/chain33/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer"
-	chain33Relayer "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/chain33"
-	ethRelayer "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/events"
-	ebrelayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
-	relayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
 	tml "github.com/BurntSushi/toml"
 	"github.com/btcsuite/btcd/limits"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer"
+	chain33Relayer "github.com/lianbaotong/cross2eth/ebrelayer/relayer/chain33"
+	ethRelayer "github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
+	relayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 )
 
 var (

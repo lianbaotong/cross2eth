@@ -3,9 +3,9 @@ package chain33
 import (
 	"strings"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/events"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 
-	chain33Evm "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4chain33/generated"
+	chain33Evm "github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 )
 

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4chain33/generated"
-	erc20 "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/erc20/generated"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
-	ebrelayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4chain33/generated"
+	erc20 "github.com/lianbaotong/cross2eth/contracts/erc20/generated"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	evmAbi "github.com/33cn/plugin/plugin/dapp/evm/executor/abi"
 	ethcommon "github.com/ethereum/go-ethereum/common"
 )

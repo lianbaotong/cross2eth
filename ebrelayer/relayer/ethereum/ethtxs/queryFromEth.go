@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	bep20 "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/bep20/generated"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	bep20 "github.com/lianbaotong/cross2eth/contracts/bep20/generated"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )

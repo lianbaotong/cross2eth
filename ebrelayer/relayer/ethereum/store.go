@@ -7,15 +7,15 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
 
 	"github.com/ethereum/go-ethereum/common"
 
 	dbm "github.com/33cn/chain33/common/db"
 	chain33Types "github.com/33cn/chain33/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/events"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/utils"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
-	gnosis "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/gnosis/generated"
-	ebTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	gnosis "github.com/lianbaotong/cross2eth/contracts/gnosis/generated"
+	ebTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 
 	//"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"

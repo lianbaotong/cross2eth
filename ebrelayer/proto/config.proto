@@ -54,6 +54,11 @@ message RelayerConfig {
   string dbPath                       = 7;   //数据库存储目录
   int32 dbCache                       = 8;   //数据库缓存大小
   bool processWithDraw                = 9;
+  bool signViaHsm                     = 10;
+  int32 secp256k1KeyIndex4Eth         = 11;
+  int32 secp256k1KeyIndex4Chain33     = 12;
+  string chain33PubKey                = 13;
+  string ethereumValidator            = 14;
 }
 
 message SyncTxReceiptConfig {

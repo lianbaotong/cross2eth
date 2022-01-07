@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	bridgeRegistry "github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	ebrelayerTypes "github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/types"
+	bridgeRegistry "github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	ebrelayerTypes "github.com/lianbaotong/cross2eth/ebrelayer/types"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 )

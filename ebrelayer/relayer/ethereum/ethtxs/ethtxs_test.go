@@ -8,9 +8,9 @@ import (
 	"testing"
 
 	chain33Common "github.com/33cn/chain33/common"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/contracts/contracts4eth/generated"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
-	"github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer/relayer/events"
+	"github.com/lianbaotong/cross2eth/contracts/contracts4eth/generated"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethinterface"
+	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
