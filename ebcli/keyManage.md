@@ -1,6 +1,7 @@
 ###  导入secp256k1私钥
-***
 
+
+***
 #### １.生成sm2密钥对
 ```
 [1] 查询密钥
@@ -15,20 +16,21 @@ sk_keyLen = 32, sk_key = A1DC40596A7D45FCFDB3569222AB9AA0BF80E87CEE21DE06EBB34D1
 pk_kcvLen = 64, pk_kcv = 3744522891E6216AB8DAFF91598F361987FFEB907CCDD040815471F89AE179E2BBECDBB9E5FD1FAE8F8601F58A73E4D91213D6576F72B5A69D68F352ADFD00AF
 ```
 
-***
 
-#### 3.在本地生成sm2密钥对
+
+***
+#### 2.生成sm2密钥对(在本地,在导出卡中密钥时，需要使用)
 
 ```
 $./ebcli_A sm2 create
-sm2 public  key = 04df88444bb03100ae594bf09857e2f9183cf9d2aa6b5287282b17fa2f88d3d0bc6ecc3b6074e09b65c876257d22581bd6e68c4628b9d4edc6479a8ab733d0bbc4
+sm2 public  key = df88444bb03100ae594bf09857e2f9183cf9d2aa6b5287282b17fa2f88d3d0bc6ecc3b6074e09b65c876257d22581bd6e68c4628b9d4edc6479a8ab733d0bbc4
 sm2 private key = 1cca3f93369cf987637d856169e13f0f623be4637e2dbf46040b14d15a8a4ada
 
 ```
 
+
 ***
 #### 3.导出sm2密钥对
-
 ```
 [1] 导出非对称密钥
 [2] 导入非对称密钥
@@ -45,6 +47,7 @@ Function [TassCtlExportKey] run success
 导出的私钥：exportedKeyCipherByPkLen = 32, exportedKeyCipherByPk: DB15564A8A9CB01FB4A9A2998554C548CF06E0BC2634CF859EB330CA752AE2A0
 ```
 
+
 ***
 #### 4.解密导出的sm2私钥
 ```
@@ -52,6 +55,8 @@ Function [TassCtlExportKey] run success
 0x546563941bdd7639179c5f272bfbb708e53dc92245791c9f1ec1a9fb8674a4eb
 ```
 
+
+***
 #### 5.在本地加密需要导入的secp256k1私钥
 ```
 ./ebcli_A sm2 encipher -k 0xcc38546e9e659d15e6b4893f0ab32a06d103931a8230b0bde71459d2b27d6944 -t 0x546563941bdd7639179c5f272bfbb708e53dc92245791c9f1ec1a9fb8674a4eb -f 0x37d244cae2278d575dc93ca70a0b6f6c
@@ -59,7 +64,11 @@ The encrypted privated key:c497234d2eab47d5cc96fa174e8d9ef7417bfc045d4ad8a87697c
 The encrypted sm4 key:50b8f08687690f7ee123abf4993741ad06afb34cfc20fcf6a8dd9c82993ad0cdeeeec063fa956e24b99027351a596a9f706fcdc445903fb05616a1af052a0886a57cdd0588a4009760b9ff2061632343aa3ab9309d1aa39c9853d1c88df79d005c35c6aea130ff27229d71110c09832f len: 112
 ```
 
-#### 5.导入secp256k1私钥
+
+
+
+***
+#### ６.导入secp256k1私钥
 ```
 [1] 应用密钥管理（增加、查询、删除）
 [2] 导入外部明文密钥到设备

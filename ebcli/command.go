@@ -151,8 +151,9 @@ func createSm2Key(cmd *cobra.Command, args []string) {
 
 	pub := sm2.SerializePublicKey(&privateKey.PublicKey, false)
 	pri := sm2.SerializePrivateKey(privateKey)
-	fmt.Println("sm2 public  key = " + chain33Common.ToHex(pub))
-	fmt.Println("sm2 private key = " + chain33Common.ToHex(pri))
+	pub = pub[1:]
+	fmt.Println("sm2 public  key = " + common.Bytes2Hex(pub), "len = ", len(pub))
+	fmt.Println("sm2 private key = " + common.Bytes2Hex(pri), "len = ", len(pri))
 }
 
 func decryptWithSm2Cmd() *cobra.Command {
