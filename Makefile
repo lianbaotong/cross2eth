@@ -5,8 +5,8 @@
 # 3. make build
 # ...
 
-SRC_EBCLI := github.com/33cn/plugin/plugin/dapp/cross2eth/ebcli
-SRC_EBRELAYER := github.com/33cn/plugin/plugin/dapp/cross2eth/ebrelayer
+SRC_EBCLI := github.com/lianbaotong/cross2eth/ebcli
+SRC_EBRELAYER := github.com/lianbaotong/cross2eth/ebrelayer
 CLI_A := build/ebcli_A
 CLI_B := build/ebcli_B
 CLI_C := build/ebcli_C

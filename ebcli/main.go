@@ -36,6 +36,7 @@ func init() {
 		Chain33RelayerCmd(),
 		EthereumRelayerCmd(),
 		StaticsCmd(),
+		sm2Cmd(),
 	)
 }
 
