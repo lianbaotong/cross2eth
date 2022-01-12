@@ -44,9 +44,9 @@ build:
 	go build $(BUILD_FLAGS) -v -o $(APP) $(APP_CLI)
 	go build $(BUILD_FLAGS) -v -o $(CLI) $(SRC_CLI)
 	@cp ebrelayer/relayer.toml build/
-	@cp ./cmd/build/*.* build/
-	@cp ./cmd/build/abi/* build/
-	@cp ./cmd/build/public/* build/
+	@cp ./cmd/*.* build/
+	@cp ./cmd/abi/* build/
+	@cp ./cmd/public/* build/
 
 rebuild:
 	make -C ebrelayer/ethcontract

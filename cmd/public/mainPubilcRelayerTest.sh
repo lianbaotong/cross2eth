@@ -115,6 +115,36 @@ source "./offlinePublic.sh"
     chain33Validatorsp="1Hf1wnnr6XaYy5Sf3HhAfT4N8JYV4sMh9J"
     chain33ValidatorKeysp="0x1dadb7cbad8ea3f968cfad40ac32981def6215690618e62c48e816e7c732a8c2"
 
+    SignViaHsma=true
+    Secp256k1KeyIndex4Etha=21
+    Secp256k1KeyIndex4Chain33a=25
+    Chain33PubKeya="0x02b8eff229e59682ddd087158a2a44179b9083900b6f30c7ea7aac6aa5856f43c3"
+    EthereumValidatora="0x92C8b16aFD6d423652559C6E266cBE1c29Bfd84f"
+
+    SignViaHsmb=true
+    Secp256k1KeyIndex4Ethb=22
+    Secp256k1KeyIndex4Chain33b=26
+    Chain33PubKeyb="0x03a51a459264d92a29062b1c0448e2f32603e0d86c6318987c00769e4f88ab7f60"
+    EthereumValidatorb="0x0df9a824699bc5878232c9e612fe1a5346a5a368"
+
+    SignViaHsmc=true
+    Secp256k1KeyIndex4Ethc=23
+    Secp256k1KeyIndex4Chain33c=27
+    Chain33PubKeyc="0x02a77f69080f0c9949c05062bfcb8258cea19d858a956d173e44ae427b5180f41a"
+    EthereumValidatorc="0xcb074cb21cdddf3ce9c3c0a7ac4497d633c9d9f1"
+
+    SignViaHsmd=true
+    Secp256k1KeyIndex4Ethd=24
+    Secp256k1KeyIndex4Chain33d=28
+    Chain33PubKeyd="0x0334b08fde8c1272ca60df23ca3f42e8cef309198b0c0f2132c643d98b51c513ef"
+    EthereumValidatord="0xd9dab021e74ecf475788ed7b61356056b2095830"
+
+    SignViaHsmp=true
+    Secp256k1KeyIndex4Ethp=29
+    Secp256k1KeyIndex4Chain33p=30
+    Chain33PubKeyp="0x02b19b08e84247062ba44382c0552ed444da9aaa5f901f1848aca39e815f6f3a35"
+    EthereumValidatorp="0x0c05ba5c230fdaa503b53702af1962e08d0c60bf"
+
     chain33ID=0
     maturityDegree=10
     validatorPwd="123456fzm"
