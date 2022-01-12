@@ -5,6 +5,22 @@
 # 3. make build
 # ...
 
+export GO111MODULE=on
+CLI := build/chain33-cli
+SRC_CLI := github.com/lianbaotong/cross2eth/chain33cli
+APP := build/chain33
+APP_CLI := github.com/lianbaotong/cross2eth/chain33
+LDFLAGS := ' -w -s'
+BUILDTIME:=$(shell date +"%Y-%m-%d %H:%M:%S %A")
+VERSION=$(shell git describe --tags || git rev-parse --short=8 HEAD)
+GitCommit=$(shell git rev-parse --short=8 HEAD)
+BUILD_FLAGS := -ldflags '-X "github.com/33cn/plugin/version.GitCommit=$(GitCommit)" \
+                         -X "github.com/33cn/plugin/version.Version=$(VERSION)" \
+                         -X "github.com/33cn/plugin/version.BuildTime=$(BUILDTIME)"'
+
+MKPATH=$(abspath $(lastword $(MAKEFILE_LIST)))
+MKDIR=$(dir $(MKPATH))
+
 SRC_EBCLI := github.com/lianbaotong/cross2eth/ebcli
 SRC_EBRELAYER := github.com/lianbaotong/cross2eth/ebrelayer
 CLI_A := build/ebcli_A
@@ -25,7 +41,12 @@ build:
 	@go build -v -i -o $(CLI_B) -ldflags "-X $(SRC_EBCLI)/buildflags.RPCAddr=http://localhost:9902" $(SRC_EBCLI)
 	@go build -v -i -o $(CLI_C) -ldflags "-X $(SRC_EBCLI)/buildflags.RPCAddr=http://localhost:9903" $(SRC_EBCLI)
 	@go build -v -i -o $(CLI_D) -ldflags "-X $(SRC_EBCLI)/buildflags.RPCAddr=http://localhost:9904" $(SRC_EBCLI)
+	go build $(BUILD_FLAGS) -v -o $(APP) $(APP_CLI)
+	go build $(BUILD_FLAGS) -v -o $(CLI) $(SRC_CLI)
 	@cp ebrelayer/relayer.toml build/
+	@cp ./cmd/build/*.* build/
+	@cp ./cmd/build/abi/* build/
+	@cp ./cmd/build/public/* build/
 
 rebuild:
 	make -C ebrelayer/ethcontract
@@ -74,16 +95,10 @@ docker: ## build docker image for chain33 run
 	@sudo docker build . -f ./build/Dockerfile-run -t chain33:latest
 
 docker-compose: ## build docker-compose for chain33 run
-	@cd build && if ! [ -d ci ]; then \
-	 make -C ../ ; \
-	 fi; \
-	 cp chain33* Dockerfile  docker-compose* ci/ && cd ci/ && ./docker-compose-pre.sh run $(proj) $(dapp)  && cd ../..
+	@cd build && ./docker-compose-pre.sh run && cd ../..
 
 docker-compose-down: ## build docker-compose for chain33 run
-	@cd build && if [ -d ci ]; then \
-	 cp chain33* Dockerfile  docker-compose* ci/ && cd ci/ && ./docker-compose-pre.sh down $(proj) $(dapp) && cd .. ; \
-	 fi; \
-	 cd ..
+	@cd build &&  ./docker-compose-pre.sh down && cd ../..
 
 clean: ## remove all the bins
 	@rm -rf $(CLI_A)
