@@ -243,6 +243,10 @@ func (manager *Manager) ImportChain33RelayerPrivateKey(importKeyReq *relayerType
 	if err := manager.checkPermission(); nil != err {
 		return err
 	}
+	if manager.chain33Relayer.IsSignViaHsm() {
+		mlog.Error("ImportChain33RelayerPrivateKey", "Failed due to: ", "chain33 relayer is configured to sign via HSM")
+		return errors.New("chain33 relayer is configured to sign via HSM")
+	}
 	err := manager.chain33Relayer.ImportPrivateKey(manager.passphase, privateKey)
 	if err != nil {
 		mlog.Error("ImportChain33ValidatorPrivateKey", "Failed due to cause:", err.Error())
@@ -252,6 +256,32 @@ func (manager *Manager) ImportChain33RelayerPrivateKey(importKeyReq *relayerType
 	*result = rpctypes.Reply{
 		IsOk: true,
 		Msg:  "Succeed to import private key for chain33 relayer",
+	}
+	return nil
+}
+
+//ImportPrivateKeyPasspin4chain33 导入HSM硬件私钥访问授权码
+func (manager *Manager) ImportPrivateKeyPasspin4chain33(importReq *relayerTypes.ImportPrivateKeyPasspinReq, result *interface{}) error {
+	manager.mtx.Lock()
+	defer manager.mtx.Unlock()
+	passpin := importReq.Passpin
+	if err := manager.checkPermission(); nil != err {
+		return err
+	}
+
+	if !manager.chain33Relayer.IsSignViaHsm() {
+		mlog.Error("ImportPrivateKeyPasspin4chain33", "Failed due to: ", "chain33 relayer is not configured to sign via HSM")
+		return errors.New("chain33 relayer is not configured to sign via HSM")
+	}
+	err := manager.chain33Relayer.ImportPassPin(manager.passphase, passpin, importReq.Address)
+	if err != nil {
+		mlog.Error("ImportPrivateKeyPasspin4chain33", "Failed due to cause:", err.Error())
+		return err
+	}
+
+	*result = rpctypes.Reply{
+		IsOk: true,
+		Msg:  "Succeed to import private key's passpin of HSM for chain33 relayer",
 	}
 	return nil
 }
@@ -295,6 +325,33 @@ func (manager *Manager) ImportEthereumPrivateKey4EthRelayer(privateKey string, r
 	*result = rpctypes.Reply{
 		IsOk: true,
 		Msg:  fmt.Sprintf("Succeed to import for address:%s", addr),
+	}
+	return nil
+}
+
+//ImportEthereumPrivateKeyPasspin 为ethrelayer导入私钥授权码
+func (manager *Manager) ImportEthereumPrivateKeyPasspin(privateKeyPasspin string, result *interface{}) error {
+	manager.mtx.Lock()
+	defer manager.mtx.Unlock()
+	if err := manager.checkPermission(); nil != err {
+		return err
+	}
+
+	if len(privateKeyPasspin) == 0 {
+		return errors.New("Null passpin")
+	}
+
+	for _, ethInt := range manager.ethRelayer {
+		err := ethInt.ImportPrivateKeyPasspin(manager.passphase, privateKeyPasspin)
+		if err != nil {
+			mlog.Error("ImportEthereumPrivateKey4EthRelayer", "Failed due to cause:", err.Error())
+			return err
+		}
+	}
+
+	*result = rpctypes.Reply{
+		IsOk: true,
+		Msg:  fmt.Sprintf("Succeed to import passpin for hsm secp256k1 key index"),
 	}
 	return nil
 }

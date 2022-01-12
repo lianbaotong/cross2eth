@@ -321,6 +321,11 @@ message Symbol2EthChain  {
     map<string, string> symbol2name = 1;
 }
 
+message ImportPrivateKeyPasspinReq {
+    string passpin = 1;
+    string address = 2;
+}
+
 
 
 

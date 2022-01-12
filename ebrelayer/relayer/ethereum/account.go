@@ -106,9 +106,6 @@ func (ethRelayer *Relayer4Ethereum) ImportPrivateKey(passphrase, privateKeyStr s
 }
 
 func (ethRelayer *Relayer4Ethereum) ImportPrivateKeyPasspin(passphrase, privateKeyPasspin string) (err error) {
-	if nil != err {
-		return err
-	}
 	ethRelayer.keyPasspin = privateKeyPasspin
 	ethRelayer.unlockchan <- start
 

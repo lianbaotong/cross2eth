@@ -17,6 +17,7 @@ require (
 	github.com/rs/cors v1.7.0
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/testify v1.7.0
+	github.com/tjfoc/gmsm v1.3.2
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 	google.golang.org/protobuf v1.27.1
 )

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/lianbaotong/cross2eth/ebcli/pass"
 	"strings"
 
 	"github.com/33cn/chain33/common"
@@ -26,6 +27,8 @@ func EthereumRelayerCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		ImportPrivatekeyPasspinCmd(),
+		TestSetPrivatekeyPasspinCmd(),
 		ImportEthPrivateKeyCmd(),
 		GenEthPrivateKeyCmd(),
 		GetAddressFromPrivateKeyCmd(),
@@ -140,6 +143,47 @@ func importEthereumPrivatekey(cmd *cobra.Command, args []string) {
 
 	var res rpctypes.Reply
 	ctx := jsonclient.NewRPCCtx(rpcLaddr, "Manager.ImportEthereumPrivateKey4EthRelayer", params, &res)
+	ctx.Run()
+}
+
+func ImportPrivatekeyPasspinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "passpinset",
+		Short: "set passpin for ethereum private key on HSM with mask format",
+		Run:   importPrivatekeyPasspin,
+	}
+	return cmd
+}
+
+func importPrivatekeyPasspin(cmd *cobra.Command, args []string) {
+	rpcLaddr, _ := cmd.Flags().GetString("rpc_laddr")
+	fmt.Printf("Enter masked passpin for ethereum: ")
+	maskedPassword, _ := pass.GetPasswdMasked()
+	params := string(maskedPassword)
+
+	var res rpctypes.Reply
+	ctx := jsonclient.NewRPCCtx(rpcLaddr, "Manager.ImportEthereumPrivateKeyPasspin", params, &res)
+	ctx.Run()
+}
+
+func TestSetPrivatekeyPasspinCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "testsetpasspin",
+		Short: "just to test set passpin for ethereum private key on HSM with echo, not to use in product env.",
+		Run:   testsetPrivatekeyPasspin,
+	}
+	cmd.Flags().StringP("passpin", "p", "", "passpin to set just used for test env.")
+	_ = cmd.MarkFlagRequired("passpin")
+	return cmd
+}
+
+func testsetPrivatekeyPasspin(cmd *cobra.Command, args []string) {
+	rpcLaddr, _ := cmd.Flags().GetString("rpc_laddr")
+	passpin, _ := cmd.Flags().GetString("passpin")
+	params := passpin
+
+	var res rpctypes.Reply
+	ctx := jsonclient.NewRPCCtx(rpcLaddr, "Manager.ImportEthereumPrivateKeyPasspin", params, &res)
 	ctx.Run()
 }
 

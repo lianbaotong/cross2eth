@@ -132,7 +132,6 @@ func main() {
 		mainlog.Info("Succeed to Open HSM Session")
 	}
 	chain33RelayerService := chain33Relayer.StartChain33Relayer(chain33StartPara)
-
 	relayerManager := relayer.NewRelayerManager(chain33RelayerService, ethRelayerServices, db)
 
 	mainlog.Info("ebrelayer", "cfg.JrpcBindAddr = ", cfg.JrpcBindAddr)

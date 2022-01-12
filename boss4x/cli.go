@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/lianbaotong/cross2eth/boss4x/hsm"
 	"net/http"
 	"os"
 	"strings"
@@ -45,6 +46,9 @@ func RootCmd() *cobra.Command {
 	cmd.AddCommand(
 		chain33.Chain33Cmd(),
 		ethereum.EthCmd(),
+		hsm.KeyManageCmd(),
+		hsm.Sm2Cmd(),
+		hsm.Secp256k1Cmd(),
 	)
 	return cmd
 }

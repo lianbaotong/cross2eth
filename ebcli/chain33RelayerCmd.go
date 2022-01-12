@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/lianbaotong/cross2eth/ebcli/pass"
 
 	"github.com/33cn/chain33/rpc/jsonclient"
 	rpctypes "github.com/33cn/chain33/rpc/types"
@@ -20,6 +21,8 @@ func Chain33RelayerCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		ImportPrivateKeyCmd(),
+		ImportPrivateKeyAuthPasswordCmd(),
+		TestImportPrivateKeyAuthPasswordCmd(),
 		ShowValidatorAddrCmd(),
 		ShowTxsHashCmd(),
 		LockAsyncFromChain33Cmd(),
@@ -286,6 +289,55 @@ func importPrivatekey(cmd *cobra.Command, args []string) {
 
 	var res rpctypes.Reply
 	ctx := jsonclient.NewRPCCtx(rpcLaddr, "Manager.ImportChain33RelayerPrivateKey", importKeyReq, &res)
+	ctx.Run()
+}
+
+//ImportPrivateKeyAuthPasswordCmd
+func ImportPrivateKeyAuthPasswordCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "passpinset",
+		Short: "import the passin for private key of hsm to sign txs to be submitted to chain33 evm",
+		Run:   importPrivateKeyAuthPassword,
+	}
+	return cmd
+}
+
+func importPrivateKeyAuthPassword(cmd *cobra.Command, args []string) {
+	rpcLaddr, _ := cmd.Flags().GetString("rpc_laddr")
+	fmt.Printf("Enter masked passpin for chain33: ")
+	maskedPassword, _ := pass.GetPasswdMasked()
+	//fmt.Println(string(maskedPassword))
+
+	importPasspinReq := ebTypes.ImportPrivateKeyPasspinReq{
+		Passpin: string(maskedPassword),
+	}
+
+	var res rpctypes.Reply
+	ctx := jsonclient.NewRPCCtx(rpcLaddr, "Manager.ImportPrivateKeyPasspin4chain33", importPasspinReq, &res)
+	ctx.Run()
+}
+
+func TestImportPrivateKeyAuthPasswordCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "testsetpasspin",
+		Short: "just to test import the passin, do not use it in product env",
+		Run:   testImportPrivateKeyAuthPassword,
+	}
+	cmd.Flags().StringP("passpin", "p", "", "passpin to set just used for test env.")
+	_ = cmd.MarkFlagRequired("passpin")
+	return cmd
+}
+
+func testImportPrivateKeyAuthPassword(cmd *cobra.Command, args []string) {
+	rpcLaddr, _ := cmd.Flags().GetString("rpc_laddr")
+	passpin, _ := cmd.Flags().GetString("passpin")
+
+	importPasspinReq := &ebTypes.ImportPrivateKeyPasspinReq{
+		Passpin: passpin,
+	}
+
+	var res rpctypes.Reply
+	ctx := jsonclient.NewRPCCtx(rpcLaddr, "Manager.ImportPrivateKeyPasspin4chain33", importPasspinReq, &res)
 	ctx.Run()
 }
 
