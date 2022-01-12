@@ -95,10 +95,10 @@ docker: ## build docker image for chain33 run
 	@sudo docker build . -f ./build/Dockerfile-run -t chain33:latest
 
 docker-compose: ## build docker-compose for chain33 run
-	@cd build && ./docker-compose-pre.sh run && cd ../..
+	@cd build && ./docker-compose.sh $(proj) && cd ..
 
 docker-compose-down: ## build docker-compose for chain33 run
-	@cd build &&  ./docker-compose-pre.sh down && cd ../..
+	@cd build && ./docker-compose-down.sh $(proj) && cd ..
 
 clean: ## remove all the bins
 	@rm -rf $(CLI_A)

@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2128
+# shellcheck disable=SC2154
+# shellcheck disable=SC2034
+# shellcheck disable=SC2120
+# shellcheck disable=SC2086
 # shellcheck source=/dev/null
 set -x
 set +e
 
-# 主要在平行链上测试
-
 source "./offlinePublic.sh"
 
-# shellcheck disable=SC2034
 {
     chain33BridgeBank=""
     chain33BridgeRegistry=""
@@ -49,7 +50,7 @@ source "./offlinePublic.sh"
     chain33DeployAddr="1JxhYLYsrscjTaQfaMoVUrnSdrejP7XRQD"
     chain33DeployKey="0x9ef82623a5e9aac58d3a6b06392af66ec77289522b28896aed66abaaede66903"
 
-    # validatorsAddr=["0x92C8b16aFD6d423652559C6E266cBE1c29Bfd84f", "0x0df9a824699bc5878232c9e612fe1a5346a5a368", "0xcb074cb21cdddf3ce9c3c0a7ac4497d633c9d9f1", "0xd9dab021e74ecf475788ed7b61356056b2095830"]# shellcheck disable=SC2034
+    # validatorsAddr=["0x92C8b16aFD6d423652559C6E266cBE1c29Bfd84f", "0x0df9a824699bc5878232c9e612fe1a5346a5a368", "0xcb074cb21cdddf3ce9c3c0a7ac4497d633c9d9f1", "0xd9dab021e74ecf475788ed7b61356056b2095830"]
     # eth 验证者私钥
     ethValidatorAddra="0x92C8b16aFD6d423652559C6E266cBE1c29Bfd84f"
     ethValidatorAddrb="0x0df9a824699bc5878232c9e612fe1a5346a5a368"
@@ -104,11 +105,13 @@ source "./offlinePublic.sh"
     chain33ReceiverAddr="12qyocayNF7Lv6C9qW4avxs2E7U41fKSfv"
     chain33ReceiverAddrKey="4257d8692ef7fe13c68b65d6a52f03933db2fa5ce8faf210b5b8b80c721ced01"
 
+    # 代理人地址
     ethValidatorAddrp="0x0c05ba5c230fdaa503b53702af1962e08d0c60bf"
     ethValidatorAddrKeyp="9dc6df3a8ab139a54d8a984f54958ae0661f880229bf3bdbb886b87d58b56a08"
     chain33Validatorp="1GTxrmuWiXavhcvsaH5w9whgVxUrWsUMdV"
     chain33ValidatorKeyp="0xd627968e445f2a41c92173225791bae1ba42126ae96c32f28f97ff8f226e5c68"
 
+    # 代理收币地址
     chain33Validatorsp="1Hf1wnnr6XaYy5Sf3HhAfT4N8JYV4sMh9J"
     chain33ValidatorKeysp="0x1dadb7cbad8ea3f968cfad40ac32981def6215690618e62c48e816e7c732a8c2"
 
@@ -118,7 +121,6 @@ source "./offlinePublic.sh"
 }
 
 function start_docker_ebrelayerA() {
-    # shellcheck disable=SC2154
     docker cp "./relayer.toml" "${dockerNamePrefix}_ebrelayera_1":/root/relayer.toml
     start_docker_ebrelayer "${dockerNamePrefix}_ebrelayera_1" "/root/ebrelayer" "./ebrelayera.log"
     sleep 5
@@ -139,11 +141,10 @@ function updata_toml_start_bcd() {
         docker cp "${file}" "${dockerNamePrefix}_ebrelayer${name}_1":/root/relayer.toml
         start_docker_ebrelayer "${dockerNamePrefix}_ebrelayer${name}_1" "/root/ebrelayer" "./ebrelayer${name}.log"
 
-        # shellcheck disable=SC2034
         CLI="docker exec ${dockerNamePrefix}_ebrelayer${name}_1 /root/ebcli_A"
         eval chain33ValidatorKey=\$chain33ValidatorKey${name}
         eval ethValidatorAddrKey=\$ethValidatorAddrKey${name}
-        # shellcheck disable=SC2154
+
         init_validator_relayer "${CLI}" "${validatorPwd}" "${chain33ValidatorKey}" "${ethValidatorAddrKey}"
     done
 }
@@ -257,8 +258,8 @@ function TestETH2Chain33Assets() {
     result=$(${CLIA} ethereum balance -o "${ethereumBridgeBank}")
     cli_ret "${result}" "balance" ".balance" "0.002"
 
-#    restart_ebrelayer_bcd "b"
-#    restart_ebrelayer_bcd "c"
+    #    restart_ebrelayer_bcd "b"
+    #    restart_ebrelayer_bcd "c"
 
     sleep ${maturityDegree}
 
@@ -273,8 +274,8 @@ function TestETH2Chain33Assets() {
     result=$(${CLIA} chain33 burn -m 0.0003 -k "${chain33ReceiverAddrKey}" -r "${ethTestAddr2}" -t "${chain33MainBridgeTokenAddr}")
     cli_ret "${result}" "burn"
 
-#    restart_ebrelayer_bcd "b"
-#    restart_ebrelayer_bcd "c"
+    #    restart_ebrelayer_bcd "b"
+    #    restart_ebrelayer_bcd "c"
 
     sleep ${maturityDegree}
 
@@ -374,7 +375,6 @@ function TestETH2Chain33USDT() {
     echo -e "${GRE}=========== $FUNCNAME end ===========${NOC}"
 }
 
-# shellcheck disable=SC2120
 function offline_set_offline_token_Bty() {
     echo -e "${GRE}=========== $FUNCNAME begin ===========${NOC}"
     echo -e "${GRE}===== chain33 端 configLockedTokenOfflineSave BTY ======${NOC}"
@@ -385,7 +385,7 @@ function offline_set_offline_token_Bty() {
         threshold=$1
         percents=$2
     fi
-    # shellcheck disable=SC2086
+
     ${Boss4xCLI} chain33 offline set_offline_token -c "${chain33BridgeBank}" -s BTY -m ${threshold} -p ${percents} -k "${chain33DeployKey}"
     chain33_offline_send "chain33_set_offline_token.txt"
 
@@ -403,13 +403,12 @@ function offline_set_offline_token_Eth() {
         percents=$2
         symbol=$3
     fi
-    # shellcheck disable=SC2086
+
     ${Boss4xCLI} ethereum offline set_offline_token -s ${symbol} -m ${threshold} -p ${percents} -c "${ethereumBridgeBank}" -d "${ethDeployAddr}"
     ethereum_offline_sign_send "set_offline_token.txt"
     echo -e "${GRE}=========== $FUNCNAME end ===========${NOC}"
 }
 
-# shellcheck disable=SC2120
 function offline_set_offline_token_EthUSDT() {
     echo -e "${GRE}=========== $FUNCNAME begin ===========${NOC}"
     local threshold=100
@@ -420,7 +419,7 @@ function offline_set_offline_token_EthUSDT() {
         percents=$2
         symbol=$3
     fi
-    # shellcheck disable=SC2086
+
     ${Boss4xCLI} ethereum offline set_offline_token -s ${symbol} -m ${threshold} -p ${percents} -t "${ethereumUSDTERC20TokenAddr}" -c "${ethereumBridgeBank}" -d "${ethDeployAddr}"
     ethereum_offline_sign_send "set_offline_token.txt"
 
@@ -499,7 +498,7 @@ function lockEth() {
     lock_eth_multisign 16 13 23
 
     # transfer
-    # shellcheck disable=SC2154
+
     offline_transfer_multisign_Eth_test
     echo -e "${GRE}=========== $FUNCNAME end ===========${NOC}"
 }
@@ -576,10 +575,7 @@ function StartDockerRelayerDeploy() {
     InitRelayerA
 
     # 设置 token 地址
-    # shellcheck disable=SC2154
-    # shellcheck disable=SC2034
     {
-
         Boss4xCLI=${Boss4xCLIeth}
         CLIA=${CLIAeth}
         ethereumBridgeBank="${ethereumBridgeBankOnETH}"
@@ -603,10 +599,7 @@ function StartDockerRelayerDeploy() {
         ethereumBtyBridgeTokenAddrOnBSC="${ethereumBtyBridgeTokenAddr}"
         offline_deploy_erc20_create_tether_usdt_USDT "BUSDT"
         ethereumUSDTERC20TokenAddrOnBSC="${ethereumUSDTERC20TokenAddr}"
-    }
 
-    # shellcheck disable=SC2086
-    {
         docker cp "${chain33BridgeBank}.abi" "${dockerNamePrefix}_ebrelayera_1":/root/${chain33BridgeBank}.abi
         docker cp "${chain33BridgeRegistry}.abi" "${dockerNamePrefix}_ebrelayera_1":/root/${chain33BridgeRegistry}.abi
         docker cp "${chain33USDTBridgeTokenAddrOnETH}.abi" "${dockerNamePrefix}_ebrelayera_1":/root/${chain33USDTBridgeTokenAddrOnETH}.abi
@@ -645,9 +638,8 @@ function echo_addrs() {
     echo -e "${GRE}ethereumUSDTERC20TokenAddrOnBSC: ${ethereumUSDTERC20TokenAddrOnBSC} ${NOC}"
     echo -e "${GRE}ethereumBtyBridgeTokenAddrOnBSC: ${ethereumBtyBridgeTokenAddrOnBSC} ${NOC}"
 
-    # shellcheck disable=SC2154
     echo -e "${GRE}XgoBridgeRegistryOnChain33: ${XgoBridgeRegistryOnChain33} ${NOC}"
-    # shellcheck disable=SC2154
+
     echo -e "${GRE}XgoChain33BridgeBank: ${XgoChain33BridgeBank} ${NOC}"
 
     echo -e "${GRE}=========== echo don't use addrs ===========${NOC}"
@@ -670,7 +662,7 @@ function echo_addrs() {
 }
 
 function get_cli() {
-    # shellcheck disable=SC2034
+
     {
         paraName="user.p.para."
         docker_chain33_ip=$(get_docker_addr "${dockerNamePrefix}_chain33_1")
@@ -715,9 +707,9 @@ function test_lock_and_burn() {
     offline_set_offline_token_Eth 100000000000000 10 "${symbol1}"
     offline_set_offline_token_EthUSDT 100000000000000 10 "${symbol2}"
 
-#    TestChain33ToEthAssets
-#    lockBty
-#    offline_set_offline_token_Bty 100000000000000 10
+    #    TestChain33ToEthAssets
+    #    lockBty
+    #    offline_set_offline_token_Bty 100000000000000 10
 }
 
 function test_all() {

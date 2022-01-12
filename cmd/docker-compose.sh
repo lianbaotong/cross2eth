@@ -36,47 +36,26 @@ NODE6="${1}_chain28_1"
 
 containers=("${NODE1}" "${NODE2}" "${NODE3}" "${NODE4}")
 export COMPOSE_PROJECT_NAME="$1"
-## global config ###
+
 sedfix=""
 if [ "$(uname)" == "Darwin" ]; then
     sedfix=".bak"
 fi
 
-DAPP=""
-if [ -n "${2}" ]; then
-    DAPP=$2
-fi
-
-#EXTRA can do more test to dapp
-EXTRA=""
-if [ -n "${3}" ]; then
-    EXTRA=$3
-fi
-
-DAPP_TEST_FILE=""
-if [ -n "${DAPP}" ]; then
-    DAPP_TEST_FILE="testcase.sh"
-    if [ -e "$DAPP_TEST_FILE" ]; then
-        # shellcheck source=/dev/null
-        source "${DAPP_TEST_FILE}"
-    fi
-
-    DAPP_COMPOSE_FILE="docker-compose-${DAPP}.yml"
-    if [ -e "$DAPP_COMPOSE_FILE" ]; then
-        export COMPOSE_FILE="docker-compose.yml:${DAPP_COMPOSE_FILE}"
-    fi
-fi
-
-if [ -z "$DAPP" ] || [ "$DAPP" == "paracross" ]; then
+DAPP="cross2eth"
+DAPP_TEST_FILE="testcase.sh"
+if [ -e "$DAPP_TEST_FILE" ]; then
     # shellcheck source=/dev/null
-    source system-test-rpc.sh
-    # shellcheck source=/dev/null
-    source dapp-test-rpc.sh
+    source "${DAPP_TEST_FILE}"
+fi
+
+DAPP_COMPOSE_FILE="docker-compose-cross2eth.yml"
+if [ -e "$DAPP_COMPOSE_FILE" ]; then
+    export COMPOSE_FILE="docker-compose.yml:${DAPP_COMPOSE_FILE}"
 fi
 
 echo "=========== # env setting ============="
 echo "DAPP=$DAPP"
-echo "EXTRA=$EXTRA"
 echo "DAPP_TEST_FILE=$DAPP_TEST_FILE"
 echo "COMPOSE_FILE=$COMPOSE_FILE"
 echo "COMPOSE_PROJECT_NAME=$COMPOSE_PROJECT_NAME"
@@ -87,7 +66,6 @@ function base_init() {
     # update test environment
     sed -i $sedfix 's/^Title.*/Title="local"/g' chain33.toml
     sed -i $sedfix 's/^TestNet=.*/TestNet=true/g' chain33.toml
-
     sed -i $sedfix 's/^powLimitBits=.*/powLimitBits="0x1f2fffff"/g' chain33.toml
     sed -i $sedfix 's/^targetTimePerBlock=.*/targetTimePerBlock=1/g' chain33.toml
     sed -i $sedfix 's/^targetTimespan=.*/targetTimespan=10000000/g' chain33.toml
@@ -96,7 +74,6 @@ function base_init() {
     sed -i $sedfix 's/^ticketFrozenTime = 43200/ticketFrozenTime = 60/g' chain33.toml
     sed -i $sedfix 's/^ticketWithdrawTime = 172800/ticketWithdrawTime = 1000/g' chain33.toml
     sed -i $sedfix 's/^ticketMinerWaitTime = 7200/ticketMinerWaitTime = 600/g' chain33.toml
-
     # p2p
     sed -i $sedfix '0,/^seeds=.*/s//seeds=["chain33:13802","chain32:13802","chain31:13802"]/g' chain33.toml
     #sed -i $sedfix 's/^enable=.*/enable=true/g' chain33.toml
@@ -105,36 +82,23 @@ function base_init() {
     sed -i $sedfix 's/^innerSeedEnable=.*/innerSeedEnable=false/g' chain33.toml
     sed -i $sedfix 's/^useGithub=.*/useGithub=false/g' chain33.toml
     sed -i $sedfix 's/^disableShard=false/disableShard=true/g' chain33.toml
-
     # rpc
     sed -i $sedfix 's/^jrpcBindAddr=.*/jrpcBindAddr="0.0.0.0:8801"/g' chain33.toml
     sed -i $sedfix 's/^grpcBindAddr=.*/grpcBindAddr="0.0.0.0:8802"/g' chain33.toml
     sed -i $sedfix 's/^whitelist=.*/whitelist=["localhost","127.0.0.1","0.0.0.0"]/g' chain33.toml
-
     # wallet
     sed -i $sedfix 's/^minerdisable=.*/minerdisable=false/g' chain33.toml
-
     sed -i $sedfix 's/^paraConsensusStopBlocks=.*/paraConsensusStopBlocks=100/g' chain33.toml
-
     # blockchain
     # TODO 剩下evm trade 测试和这个选项有关，在其他pr中解决，不使得这个pr太大
     sed -i $sedfix 's/^enableReduceLocaldb=.*/enableReduceLocaldb=false/g' chain33.toml
     sed -i $sedfix 's/^enablePushSubscribe=.*/enablePushSubscribe=true/g' chain33.toml
-
     # ticket
     sed -i $sedfix 's/^ticketPrice =.*/ticketPrice = 10000/g' chain33.toml
-
     #relay genesis
     sed -i $sedfix 's/^genesis="12qyocayNF7.*/genesis="1G5Cjy8LuQex2fuYv3gzb7B8MxAnxLEqt3"/g' chain33.toml
-
-    if [ "$DAPP" == "x2ethereum" ]; then
-        sed -i $sedfix 's/^enableReduceLocaldb=.*/enableReduceLocaldb=false/g' chain33.toml
-        sed -i $sedfix 's/^enablePushSubscribe=.*/enablePushSubscribe=true/g' chain33.toml
-    fi
-
     #autonomy config
     sed -i $sedfix 's/^autonomyExec=.*/autonomyExec=""/g' chain33.toml
-
 }
 
 function start() {
@@ -479,22 +443,9 @@ function base_config() {
     transfer "${CLI}"
 }
 
-function rpc_test() {
-    if [ "$DAPP" == "" ]; then
-        system_test_rpc "http://${1}:8801"
-        dapp_test_address "${CLI}"
-        dapp_test_rpc "http://${1}:8801" "${dockerNamePrefix}"
-    fi
-    if [ "$DAPP" == "paracross" ]; then
-        system_test_rpc "http://${1}:8901"
-        dapp_test_address "${CLI}"
-        dapp_test_rpc "http://${1}:8901"
-    fi
-}
-
 function dapp_run() {
     if [ -e "$DAPP_TEST_FILE" ]; then
-        ${DAPP} "${CLI}" "${1}" "${2}"
+        ${DAPP} "${CLI}" "${1}"
     fi
 
 }
@@ -503,7 +454,7 @@ function main() {
     echo "==============================DAPP=$DAPP main begin========================================================"
     ### init para ####
     base_init
-    dapp_run init "${EXTRA}"
+    dapp_run init
 
     ### start docker ####
     start
@@ -521,13 +472,9 @@ function main() {
     fi
     dapp_run test "${ip}"
 
-    ### rpc test  ###
-    rpc_test "${ip}"
-
     ### finish ###
     check_docker_container
     echo "===============================DAPP=$DAPP main end========================================================="
 }
 
-# run script
 main
