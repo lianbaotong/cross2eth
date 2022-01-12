@@ -48,7 +48,6 @@ func RootCmd() *cobra.Command {
 		ethereum.EthCmd(),
 		hsm.KeyManageCmd(),
 		hsm.Sm2Cmd(),
-		hsm.Secp256k1Cmd(),
 	)
 	return cmd
 }
