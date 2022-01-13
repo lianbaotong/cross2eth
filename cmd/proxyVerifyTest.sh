@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2128
 # shellcheck disable=SC2086
+# shellcheck disable=SC2154
 # shellcheck source=/dev/null
 set -x
 set +e
@@ -26,11 +27,14 @@ function start_docker_ebrelayerProxy() {
 
     # shellcheck disable=SC2154
     docker cp "./relayerproxy.toml" "${dockerNamePrefix}_ebrelayerproxy_1":/root/relayer.toml
+    docker cp /lib/x86_64-linux-gnu/tass/libTassSDF4PCIeSM.so "${dockerNamePrefix}_ebrelayerproxy_1":/lib/x86_64-linux-gnu/
+    docker cp /lib/x86_64-linux-gnu/tass/libtass_pcie_api.so "${dockerNamePrefix}_ebrelayerproxy_1":/lib/x86_64-linux-gnu/
+    docker cp /lib/x86_64-linux-gnu/tass/libTassCtlAPI4PCIeSM.so "${dockerNamePrefix}_ebrelayerproxy_1":/lib/x86_64-linux-gnu/
     start_docker_ebrelayer "${dockerNamePrefix}_ebrelayerproxy_1" "/root/ebrelayer" "./ebrelayerproxy.log"
     sleep 1
 
-    # shellcheck disable=SC2154
-    init_validator_relayer "${CLIP}" "${validatorPwd}" "${chain33ValidatorKeyp}" "${ethValidatorAddrKeyp}"
+    docker_relayer_ip=$(get_docker_addr "${dockerNamePrefix}_ebrelayerproxy_1")
+    init_validator_relayer_hsm "${CLIP}" "${validatorPwd}" "${docker_relayer_ip}"
 }
 
 function setWithdraw_ethereum() {

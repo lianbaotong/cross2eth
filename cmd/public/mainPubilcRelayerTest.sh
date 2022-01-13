@@ -152,6 +152,10 @@ source "./offlinePublic.sh"
 
 function start_docker_ebrelayerA() {
     docker cp "./relayer.toml" "${dockerNamePrefix}_ebrelayera_1":/root/relayer.toml
+    docker cp /lib/x86_64-linux-gnu/tass/libTassSDF4PCIeSM.so "${dockerNamePrefix}_ebrelayera_1":/lib/x86_64-linux-gnu/
+    docker cp /lib/x86_64-linux-gnu/tass/libtass_pcie_api.so "${dockerNamePrefix}_ebrelayera_1":/lib/x86_64-linux-gnu/
+    docker cp /lib/x86_64-linux-gnu/tass/libTassCtlAPI4PCIeSM.so "${dockerNamePrefix}_ebrelayera_1":/lib/x86_64-linux-gnu/
+
     start_docker_ebrelayer "${dockerNamePrefix}_ebrelayera_1" "/root/ebrelayer" "./ebrelayera.log"
     sleep 5
 }
@@ -180,6 +184,10 @@ function updata_toml_start_bcd() {
         sed -i 's/^EthereumValidator=.*/EthereumValidator="'"${EthereumValidator}"'"/g' "${file}"
 
         docker cp "${file}" "${dockerNamePrefix}_ebrelayer${name}_1":/root/relayer.toml
+        docker cp /lib/x86_64-linux-gnu/tass/libTassSDF4PCIeSM.so "${dockerNamePrefix}_ebrelayer${name}_1":/lib/x86_64-linux-gnu/
+        docker cp /lib/x86_64-linux-gnu/tass/libtass_pcie_api.so "${dockerNamePrefix}_ebrelayer${name}_1":/lib/x86_64-linux-gnu/
+        docker cp /lib/x86_64-linux-gnu/tass/libTassCtlAPI4PCIeSM.so "${dockerNamePrefix}_ebrelayer${name}_1":/lib/x86_64-linux-gnu/
+
         start_docker_ebrelayer "${dockerNamePrefix}_ebrelayer${name}_1" "/root/ebrelayer" "./ebrelayer${name}.log"
 
         CLI="docker exec ${dockerNamePrefix}_ebrelayer${name}_1 /root/ebcli_A"
