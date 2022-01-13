@@ -18,6 +18,7 @@ BUILD_FLAGS := -ldflags '-X "github.com/33cn/plugin/version.GitCommit=$(GitCommi
                          -X "github.com/33cn/plugin/version.Version=$(VERSION)" \
                          -X "github.com/33cn/plugin/version.BuildTime=$(BUILDTIME)"'
 
+
 MKPATH=$(abspath $(lastword $(MAKEFILE_LIST)))
 MKDIR=$(dir $(MKPATH))
 
@@ -29,6 +30,9 @@ CLI_C := build/ebcli_C
 CLI_D := build/ebcli_D
 EBRELAER := build/ebrelayer   ##通过配置文件启动不同的ebrelayer
 
+BOSS4XCLI := build/boss4x
+SRC_BOSS4XCLI := github.com/lianbaotong/cross2eth/boss4x
+
 LDFLAGS := -ldflags "-w -s"
 proj := "build"
 .PHONY: default dep all build release cli linter race test fmt vet bench msan coverage coverhtml docker docker-compose protobuf clean help autotest
@@ -36,6 +40,7 @@ proj := "build"
 default: build
 
 build:
+	@go build -v -i -o $(BOSS4XCLI) $(SRC_BOSS4XCLI)
 	@go build -v -i -o $(EBRELAER) $(SRC_EBRELAYER)
 	@go build -v -i -o $(CLI_A) $(SRC_EBCLI)
 	@go build -v -i -o $(CLI_B) -ldflags "-X $(SRC_EBCLI)/buildflags.RPCAddr=http://localhost:9902" $(SRC_EBCLI)
@@ -95,7 +100,7 @@ docker: ## build docker image for chain33 run
 	@sudo docker build . -f ./build/Dockerfile-run -t chain33:latest
 
 docker-compose: ## build docker-compose for chain33 run
-	@cd build && ./docker-compose.sh $(proj) && cd ..
+	@make && cd build && ./docker-compose.sh $(proj) && cd ..
 
 docker-compose-down: ## build docker-compose for chain33 run
 	@cd build && ./docker-compose-down.sh $(proj) && cd ..
