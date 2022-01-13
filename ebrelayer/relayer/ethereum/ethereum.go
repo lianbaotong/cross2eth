@@ -732,8 +732,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 
 	if !ethRelayer.getHsmRight && ethRelayer.signViaHsm {
 		if err := adapter.GetPrivateKeyAccessRight(ethRelayer.keyPasspin, ethRelayer.secp256k1Index); nil != err {
-			// +++++++
-			relayerLog.Error("handleLogLockBurn", "ethRelayer.keyPasspin", ethRelayer.keyPasspin, "ethRelayer.secp256k1Index", ethRelayer.secp256k1Index, "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
+			relayerLog.Error("handleLogLockBurn", "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
 			return errors.New("ErrGetPrivateKeyAccessRight")
 		}
 		ethRelayer.getHsmRight = true

@@ -365,8 +365,6 @@ func (chain33Relayer *Relayer4Chain33) relayLockBurnToChain33(claim *ebTypes.Eth
 	if chain33Relayer.signViaHsm {
 		if !chain33Relayer.getHsmRight {
 			if err := adapter.GetPrivateKeyAccessRight(chain33Relayer.keyPasspin, chain33Relayer.secp256k1Index); nil != err {
-				// +++++++
-				relayerLog.Error("handleLogLockBurn", "chain33Relayer.keyPasspin", chain33Relayer.keyPasspin, "chain33Relayer.secp256k1Index", chain33Relayer.secp256k1Index, "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
 				panic("Failed to GetPrivateKeyAccessRight via HSM due to" + err.Error())
 			}
 			chain33Relayer.getHsmRight = true
