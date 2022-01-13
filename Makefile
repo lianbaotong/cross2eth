@@ -51,6 +51,7 @@ build:
 	@cp ebrelayer/relayer.toml build/
 	@cp ./cmd/*.* build/
 	@cp ./cmd/abi/* build/
+	@cp ./cmd/dockerfile/* build/
 	@cp ./cmd/public/* build/
 
 rebuild:

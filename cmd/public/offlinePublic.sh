@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2128
+# shellcheck disable=SC2154
 # shellcheck source=/dev/null
 set -x
 set +e
@@ -270,7 +271,7 @@ function OfflineDeploy() {
         ethereumBridgeRegistryOnETH="${ethereumBridgeRegistry}"
         ethereumMultisignAddrOnETH="${ethereumMultisignAddr}"
 
-        sed -i '7,15s/BridgeRegistry=.*/BridgeRegistry="'"${ethereumBridgeRegistryOnETH}"'"/g' "./relayer.toml"
+        sed -i '16,22s/BridgeRegistry=.*/BridgeRegistry="'"${ethereumBridgeRegistryOnETH}"'"/g' "./relayer.toml"
 
         Boss4xCLI=${Boss4xCLIbsc}
         CLIA=${CLIAbsc}
@@ -307,12 +308,46 @@ function init_validator_relayer() {
     cli_ret "${result}" "ethereum import_privatekey"
 }
 
+function check_import_private_passpin() {
+    ok=$(echo "${1}" | jq -r .result.isOK)
+    if [[ ${ok} != "true" ]]; then
+        echo -e "${RED}failed to ${2}${NOC}"
+        exit_cp_file
+    fi
+}
+
+function import_private_passpin() {
+    local docker_relayer_ip=$1
+    reqChain33='{"method":"Manager.ImportPrivateKeyPasspin4chain33", "params":[{"passpin":"a1234567"}]}'
+    reqEth='{"method":"Manager.ImportEthereumPrivateKeyPasspin", "params":["a1234567"]}'
+
+    respChain33=$(curl -X POST --data "$reqChain33" -H "Content-Type: application/json" "http://${docker_relayer_ip}:9901")
+    respEth=$(curl -X POST --data "$reqEth" -H "Content-Type: application/json" "http://${docker_relayer_ip}:9901")
+
+    check_import_private_passpin "${respChain33}" "ImportPrivateKeyPasspin4chain33"
+    check_import_private_passpin "${respEth}" "ImportEthereumPrivateKeyPasspin"
+}
+
+# init $1 CLI $2 pwd $3 docker_relayer_ip
+function init_validator_relayer_hsm() {
+    local CLI=$1
+    local pwd=$2
+    local docker_relayer_ip=$3
+    result=$(${CLI} set_pwd -p "${pwd}")
+    cli_ret "${result}" "set_pwd"
+
+    result=$(${CLI} unlock -p "${pwd}")
+    cli_ret "${result}" "unlock"
+
+    import_private_passpin "${docker_relayer_ip}"
+}
+
 # shellcheck disable=SC2120
 function InitRelayerA() {
     echo -e "${GRE}=========== $FUNCNAME begin ===========${NOC}"
 
-    # shellcheck disable=SC2154
-    init_validator_relayer "${CLIA}" "${validatorPwd}" "${chain33ValidatorKeya}" "${ethValidatorAddrKeya}"
+    docker_relayer_ip=$(get_docker_addr "${dockerNamePrefix}_ebrelayera_1")
+    init_validator_relayer_hsm "${CLIA}" "${validatorPwd}" "${docker_relayer_ip}"
 
     ${CLIA} chain33 multisign set_multiSign -a "${chain33MultisignAddr}"
 

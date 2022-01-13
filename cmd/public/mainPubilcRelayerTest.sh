@@ -168,6 +168,17 @@ function updata_toml_start_bcd() {
         sed -i 's/^pushHost=.*/pushHost="http:\/\/'"${pushHost}"':20000"/' "${file}"
         sed -i 's/^pushBind=.*/pushBind="'"${pushHost}"':20000"/' "${file}"
 
+        eval SignViaHsm=\$SignViaHsm${name}
+        sed -i 's/^SignViaHsm=.*/SignViaHsm='${SignViaHsm}'/g' "${file}"
+        eval Secp256k1KeyIndex4Eth=\$Secp256k1KeyIndex4Eth${name}
+        sed -i 's/^Secp256k1KeyIndex4Eth=.*/Secp256k1KeyIndex4Eth='${Secp256k1KeyIndex4Eth}'/g' "${file}"
+        eval Secp256k1KeyIndex4Chain33=\$Secp256k1KeyIndex4Chain33${name}
+        sed -i 's/^Secp256k1KeyIndex4Chain33=.*/Secp256k1KeyIndex4Chain33='${Secp256k1KeyIndex4Chain33}'/g' "${file}"
+        eval Chain33PubKey=\$Chain33PubKey${name}
+        sed -i 's/^Chain33PubKey=.*/Chain33PubKey="'"${Chain33PubKey}"'"/g' "${file}"
+        eval EthereumValidator=\$EthereumValidator${name}
+        sed -i 's/^EthereumValidator=.*/EthereumValidator="'"${EthereumValidator}"'"/g' "${file}"
+
         docker cp "${file}" "${dockerNamePrefix}_ebrelayer${name}_1":/root/relayer.toml
         start_docker_ebrelayer "${dockerNamePrefix}_ebrelayer${name}_1" "/root/ebrelayer" "./ebrelayer${name}.log"
 
@@ -175,7 +186,8 @@ function updata_toml_start_bcd() {
         eval chain33ValidatorKey=\$chain33ValidatorKey${name}
         eval ethValidatorAddrKey=\$ethValidatorAddrKey${name}
 
-        init_validator_relayer "${CLI}" "${validatorPwd}" "${chain33ValidatorKey}" "${ethValidatorAddrKey}"
+        docker_relayer_ip=$(get_docker_addr "${dockerNamePrefix}_ebrelayer${name}_1")
+        init_validator_relayer_hsm "${CLI}" "${validatorPwd}" "${docker_relayer_ip}"
     done
 }
 
@@ -563,10 +575,10 @@ function up_relayer_toml() {
     sed -i 's/^pushName=.*/pushName="x2ethA"/g' "${relaye_file}"
 
     # 替换7到15行
-    sed -i '7,15s/ethProvider=.*/ethProvider="ws:\/\/'"${docker_ganachetesteth_ip}"':8545\/"/g' "${relaye_file}"
-    sed -i '17,24s/ethProvider=.*/ethProvider="ws:\/\/'"${docker_ganachetestbsc_ip}"':8545\/"/g' "${relaye_file}"
-    sed -i '7,15s/EthProviderCli=.*/EthProviderCli="http:\/\/'"${docker_ganachetesteth_ip}"':8545\/"/g' "${relaye_file}"
-    sed -i '17,24s/EthProviderCli=.*/EthProviderCli="http:\/\/'"${docker_ganachetestbsc_ip}"':8545\/"/g' "${relaye_file}"
+    sed -i '16,22s/ethProvider=.*/ethProvider="ws:\/\/'"${docker_ganachetesteth_ip}"':8545\/"/g' "${relaye_file}"
+    sed -i '24,30s/ethProvider=.*/ethProvider="ws:\/\/'"${docker_ganachetestbsc_ip}"':8545\/"/g' "${relaye_file}"
+    sed -i '16,22s/EthProviderCli=.*/EthProviderCli="http:\/\/'"${docker_ganachetesteth_ip}"':8545\/"/g' "${relaye_file}"
+    sed -i '24,30s/EthProviderCli=.*/EthProviderCli="http:\/\/'"${docker_ganachetestbsc_ip}"':8545\/"/g' "${relaye_file}"
     sed -i 's/^pushHost=.*/pushHost="http:\/\/'"${docker_ebrelayera_ip}"':20000"/' "${relaye_file}"
     sed -i 's/^pushBind=.*/pushBind="'"${docker_ebrelayera_ip}"':20000"/' "${relaye_file}"
     sed -i 's/^chain33Host=.*/chain33Host="http:\/\/'"${docker_chain33_ip}"':8901"/' "${relaye_file}"
@@ -577,6 +589,12 @@ function up_relayer_toml() {
     sed -i 's/^ChainName=.*/ChainName="'"${paraName}"'"/g' "${relaye_file}"
     sed -i 's/^maturityDegree=.*/maturityDegree=1/g' "${relaye_file}"
     sed -i 's/^EthMaturityDegree=.*/EthMaturityDegree=1/g' "${relaye_file}"
+
+    sed -i 's/^SignViaHsm=.*/SignViaHsm='${SignViaHsma}'/g' "${relaye_file}"
+    sed -i 's/^Secp256k1KeyIndex4Eth=.*/Secp256k1KeyIndex4Eth='${Secp256k1KeyIndex4Etha}'/g' "${relaye_file}"
+    sed -i 's/^Secp256k1KeyIndex4Chain33=.*/Secp256k1KeyIndex4Chain33='${Secp256k1KeyIndex4Chain33a}'/g' "${relaye_file}"
+    sed -i 's/^Chain33PubKey=.*/Chain33PubKey="'"${Chain33PubKeya}"'"/g' "${relaye_file}"
+    sed -i 's/^EthereumValidator=.*/EthereumValidator="'"${EthereumValidatora}"'"/g' "${relaye_file}"
 
     echo -e "${GRE}=========== $FUNCNAME end ===========${NOC}"
 }
