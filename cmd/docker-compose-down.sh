@@ -15,6 +15,8 @@ function down() {
     echo "============ down start ================="
     echo "=========== # docker-compose ps ============="
     docker-compose ps
+    # shellchk not recommend the first way
+    # remains=( $(docker-compose ps -q | awk '{print $1}') )
     mapfile -t remains < <(docker-compose ps -q | awk '{print $1}')
     # shellcheck disable=SC2154
     num=${#remains[@]}
