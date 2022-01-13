@@ -339,10 +339,10 @@ function init_validator_relayer_hsm() {
     result=$(${CLI} unlock -p "${pwd}")
     cli_ret "${result}" "unlock"
 
-    result=$(${CLI} ethereum testsetpasspin -p a123456)
+    result=$(${CLI} ethereum testsetpasspin -p a1234567)
     cli_ret "${result}" "ethereum testsetpasspin"
 
-    result=$(${CLI} chain33 testsetpasspin -p a123456)
+    result=$(${CLI} chain33 testsetpasspin -p a1234567)
     cli_ret "${result}" "chain33 testsetpasspin"
 }
 

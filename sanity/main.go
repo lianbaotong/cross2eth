@@ -40,7 +40,7 @@ func main() {
 	fmt.Println("Succeed to OpenHSMSession")
 	fmt.Println("   ")
 
-	if err := adapter.GetPrivateKeyAccessRight("a1234567", 21); nil != err {
+	if err := adapter.GetPrivateKeyAccessRight("a1234567", 25); nil != err {
 		panic("Failed to GetPrivateKeyAccessRight")
 	}
 
