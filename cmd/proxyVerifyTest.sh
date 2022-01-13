@@ -27,9 +27,7 @@ function start_docker_ebrelayerProxy() {
 
     # shellcheck disable=SC2154
     docker cp "./relayerproxy.toml" "${dockerNamePrefix}_ebrelayerproxy_1":/root/relayer.toml
-    docker cp /lib/x86_64-linux-gnu/tass/libTassSDF4PCIeSM.so "${dockerNamePrefix}_ebrelayerproxy_1":/lib/x86_64-linux-gnu/
-    docker cp /lib/x86_64-linux-gnu/tass/libtass_pcie_api.so "${dockerNamePrefix}_ebrelayerproxy_1":/lib/x86_64-linux-gnu/
-    docker cp /lib/x86_64-linux-gnu/tass/libTassCtlAPI4PCIeSM.so "${dockerNamePrefix}_ebrelayerproxy_1":/lib/x86_64-linux-gnu/
+    docker_cp_export "${dockerNamePrefix}_ebrelayerproxy_1"
     start_docker_ebrelayer "${dockerNamePrefix}_ebrelayerproxy_1" "/root/ebrelayer" "./ebrelayerproxy.log"
     sleep 1
 

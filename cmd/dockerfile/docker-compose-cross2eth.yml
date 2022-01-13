@@ -13,26 +13,36 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-cross2eth
+    devices:
+      - "/dev/tass_pci_c501_2380:/dev/tass_pci_c501_2380"
 
   ebrelayera:
     build:
       context: .
       dockerfile: Dockerfile-cross2eth
+    devices:
+      - "/dev/tass_pci_c501_2380:/dev/tass_pci_c501_2380"
 
   ebrelayerb:
     build:
       context: .
       dockerfile: Dockerfile-cross2eth
+    devices:
+      - "/dev/tass_pci_c501_2380:/dev/tass_pci_c501_2380"
 
   ebrelayerc:
     build:
       context: .
       dockerfile: Dockerfile-cross2eth
+    devices:
+      - "/dev/tass_pci_c501_2380:/dev/tass_pci_c501_2380"
 
   ebrelayerd:
     build:
       context: .
       dockerfile: Dockerfile-cross2eth
+    devices:
+      - "/dev/tass_pci_c501_2380:/dev/tass_pci_c501_2380"
 
   chain33:
     entrypoint: /root/entrypoint.sh
