@@ -332,14 +332,18 @@ function import_private_passpin() {
 function init_validator_relayer_hsm() {
     local CLI=$1
     local pwd=$2
-    local docker_relayer_ip=$3
+#    local docker_relayer_ip=$3
     result=$(${CLI} set_pwd -p "${pwd}")
     cli_ret "${result}" "set_pwd"
 
     result=$(${CLI} unlock -p "${pwd}")
     cli_ret "${result}" "unlock"
 
-    import_private_passpin "${docker_relayer_ip}"
+    result=$(${CLI} ethereum testsetpasspin -p a123456)
+    cli_ret "${result}" "ethereum testsetpasspin"
+
+    result=$(${CLI} chain33 testsetpasspin -p a123456)
+    cli_ret "${result}" "chain33 testsetpasspin"
 }
 
 # shellcheck disable=SC2120
