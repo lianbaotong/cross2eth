@@ -2,6 +2,7 @@ package ethtxs
 
 import (
 	"crypto/ecdsa"
+
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"

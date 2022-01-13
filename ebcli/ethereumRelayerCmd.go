@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/lianbaotong/cross2eth/ebcli/pass"
 	"strings"
+
+	"github.com/lianbaotong/cross2eth/ebcli/pass"
 
 	"github.com/33cn/chain33/common"
 	chain33Common "github.com/33cn/chain33/common"

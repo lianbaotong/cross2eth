@@ -5,6 +5,8 @@ package main
 
 import (
 	"fmt"
+	"math/big"
+
 	chain33Common "github.com/33cn/chain33/common"
 	"github.com/33cn/chain33/rpc/jsonclient"
 	rpctypes "github.com/33cn/chain33/rpc/types"
@@ -14,7 +16,6 @@ import (
 	"github.com/spf13/cobra"
 	gmsm2 "github.com/tjfoc/gmsm/sm2"
 	gmsm4 "github.com/tjfoc/gmsm/sm4"
-	"math/big"
 )
 
 // SetPwdCmd set password
@@ -152,8 +153,8 @@ func createSm2Key(cmd *cobra.Command, args []string) {
 	pub := sm2.SerializePublicKey(&privateKey.PublicKey, false)
 	pri := sm2.SerializePrivateKey(privateKey)
 	pub = pub[1:]
-	fmt.Println("sm2 public  key = " + common.Bytes2Hex(pub), "len = ", len(pub))
-	fmt.Println("sm2 private key = " + common.Bytes2Hex(pri), "len = ", len(pri))
+	fmt.Println("sm2 public  key = "+common.Bytes2Hex(pub), "len = ", len(pub))
+	fmt.Println("sm2 private key = "+common.Bytes2Hex(pri), "len = ", len(pri))
 }
 
 func decryptWithSm2Cmd() *cobra.Command {
@@ -284,7 +285,7 @@ func encryptWithSm2(cmd *cobra.Command, args []string) {
 	dst := make([]byte, 32)
 	sm4Cihpher.Encrypt(dst, privatKey)
 	sm4Cihpher.Encrypt(dst[16:], privatKey[16:])
-	fmt.Println("The encrypted privated key:" + common.Bytes2Hex(dst), "len:", len(dst))
+	fmt.Println("The encrypted privated key:"+common.Bytes2Hex(dst), "len:", len(dst))
 
 	//第二步，加密数字信封
 	sm2key, err := chain33Common.FromHex(sm2keyStr)
@@ -316,7 +317,7 @@ func encryptWithSm2(cmd *cobra.Command, args []string) {
 	}
 	sm4Key = sm4Key[1:]
 
-	fmt.Println("The encrypted sm4 key:" + common.Bytes2Hex(sm4Key), "len:", len(sm4Key))
+	fmt.Println("The encrypted sm4 key:"+common.Bytes2Hex(sm4Key), "len:", len(sm4Key))
 }
 
 //sm2 public  key = 04df88444bb03100ae594bf09857e2f9183cf9d2aa6b5287282b17fa2f88d3d0bc6ecc3b6074e09b65c876257d22581bd6e68c4628b9d4edc6479a8ab733d0bbc4
@@ -329,15 +330,10 @@ func encryptWithSm2(cmd *cobra.Command, args []string) {
 //请输入要导入密钥的类型：2-SM2，3-ECC_SECP_256R1, 4-RSA, 8-ECC_SECP_256K1: 8
 //请输入要导入密钥的索引：9
 
-
 //sm2 key=
 //Function [TassCtlGenerateKey] run success
 //sk_keyLen = 32, sk_key = A1DC40596A7D45FCFDB3569222AB9AA0BF80E87CEE21DE06EBB34D1DB6891DAB
 //明文私钥　= 0x546563941bdd7639179c5f272bfbb708e53dc92245791c9f1ec1a9fb8674a4eb
 //pk_kcvLen = 64, pk_kcv = 3744522891E6216AB8DAFF91598F361987FFEB907CCDD040815471F89AE179E2BBECDBB9E5FD1FAE8F8601F58A73E4D91213D6576F72B5A69D68F352ADFD00AF
 
-
 //504fa1c28caaf1d5a20fefb87c50a49724ff401043420cb3ba271997eb5a43879f2f7508d37165db9d9721b819ccaa3ef08a20bbab986c18b79d44a7e4201b8e
-
-
-

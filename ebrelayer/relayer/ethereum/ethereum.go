@@ -14,7 +14,6 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
-	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"math"
 	"math/big"
 	"regexp"
@@ -22,6 +21,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 
 	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
 
@@ -731,7 +732,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 
 	if !ethRelayer.getHsmRight && ethRelayer.signViaHsm {
 		if err := adapter.GetPrivateKeyAccessRight(ethRelayer.keyPasspin, ethRelayer.secp256k1Index); nil != err {
-			relayerLog.Error("handleLogLockBurn", "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
+			relayerLog.Error("handleLogLockBurn", "ethRelayer.keyPasspin", ethRelayer.keyPasspin, "ethRelayer.secp256k1Index", ethRelayer.secp256k1Index, "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
 			return errors.New("ErrGetPrivateKeyAccessRight")
 		}
 		ethRelayer.getHsmRight = true

@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 	"io"
 	"net"
 	"net/http"
@@ -15,6 +14,8 @@ import (
 	"path/filepath"
 	"sync"
 	"syscall"
+
+	"github.com/33cn/plugincgo/plugin/crypto/secp256k1hsm/adapter"
 
 	"github.com/33cn/chain33/common"
 	dbm "github.com/33cn/chain33/common/db"

@@ -332,7 +332,7 @@ function import_private_passpin() {
 function init_validator_relayer_hsm() {
     local CLI=$1
     local pwd=$2
-#    local docker_relayer_ip=$3
+    #    local docker_relayer_ip=$3
     result=$(${CLI} set_pwd -p "${pwd}")
     cli_ret "${result}" "set_pwd"
 

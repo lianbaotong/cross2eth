@@ -7,11 +7,12 @@
 package types
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	proto "github.com/golang/protobuf/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -3690,8 +3691,8 @@ var file_relayer_proto_goTypes = []interface{}{
 	(*CfgMultiSignAddr)(nil),            // 44: types.CfgMultiSignAddr
 	(*Symbol2EthChain)(nil),             // 45: types.Symbol2EthChain
 	(*ImportPrivateKeyPasspinReq)(nil),  // 46: types.ImportPrivateKeyPasspinReq
-	nil,                                 // 47: types.WithdrawSymbol2Para.Symbol2ParaEntry
-	nil,                                 // 48: types.Symbol2EthChain.Symbol2nameEntry
+	nil, // 47: types.WithdrawSymbol2Para.Symbol2ParaEntry
+	nil, // 48: types.Symbol2EthChain.Symbol2nameEntry
 }
 var file_relayer_proto_depIdxs = []int32{
 	25, // 0: types.TokenAddressArray.tokenAddress:type_name -> types.TokenAddress
