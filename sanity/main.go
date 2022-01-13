@@ -44,28 +44,24 @@ func main() {
 		panic("Failed to GetPrivateKeyAccessRight")
 	}
 
-	return
-
-
 	//passwd := "a1234567"
-	passwd := "33123456"
-
-	for keyIndex := 7; keyIndex <= 7; keyIndex++ {
-
-		//keyIndex := 2
-		if err := adapter.GetPrivateKeyAccessRight(passwd, keyIndex); nil != err {
-			panic("Failed to GetPrivateKeyAccessRight")
-		}
-
-		for i := 0; i < 2; i++ {
-			time.Sleep(time.Millisecond * 1000)
-			verifySecp256k1(keyIndex)
-		}
-		if err := adapter.ReleaeAccessRight(keyIndex); nil != err {
-			panic("Failed to GetPrivateKeyAccessRight")
-		}
-
-	}
+	//passwd := "33123456"
+	//
+	//for keyIndex := 7; keyIndex <= 7; keyIndex++ {
+	//
+	//	//keyIndex := 2
+	//	if err := adapter.GetPrivateKeyAccessRight(passwd, keyIndex); nil != err {
+	//		panic("Failed to GetPrivateKeyAccessRight")
+	//	}
+	//
+	//	for i := 0; i < 2; i++ {
+	//		time.Sleep(time.Millisecond * 1000)
+	//		verifySecp256k1(keyIndex)
+	//	}
+	//	if err := adapter.ReleaeAccessRight(keyIndex); nil != err {
+	//		panic("Failed to GetPrivateKeyAccessRight")
+	//	}
+	//}
 
 	adapter.CloseHSMSession()
 }
