@@ -5,5 +5,8 @@ COPY ebrelayer ebrelayer
 COPY ebcli_A ebcli_A
 COPY boss4x boss4x
 COPY sleep.sh sleep.sh
+COPY /lib/x86_64-linux-gnu/tass/libTassSDF4PCIeSM.so /lib/x86_64-linux-gnu/libTassSDF4PCIeSM.so
+COPY /lib/x86_64-linux-gnu/tass/libtass_pcie_api.so /lib/x86_64-linux-gnu/libtass_pcie_api.so
+COPY /lib/x86_64-linux-gnu/tass/libTassCtlAPI4PCIeSM.so /lib/x86_64-linux-gnu/libTassCtlAPI4PCIeSM.so
 
 CMD ["/root/sleep.sh"]
