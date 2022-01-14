@@ -11,13 +11,12 @@ SRC_CLI := github.com/lianbaotong/cross2eth/chain33cli
 APP := build/chain33
 APP_CLI := github.com/lianbaotong/cross2eth/chain33
 LDFLAGS := ' -w -s'
-BUILDTIME:=$(shell date +"%Y-%m-%d %H:%M:%S %A")
-VERSION=$(shell git describe --tags || git rev-parse --short=8 HEAD)
-GitCommit=$(shell git rev-parse --short=8 HEAD)
+BUILDTIME := $(shell date +"%Y-%m-%d %H:%M:%S %A")
+VERSION := $(shell git rev-parse --short=8 HEAD)
+GitCommit := $(shell git rev-parse --short=8 HEAD)
 BUILD_FLAGS := -ldflags '-X "github.com/33cn/plugin/version.GitCommit=$(GitCommit)" \
                          -X "github.com/33cn/plugin/version.Version=$(VERSION)" \
                          -X "github.com/33cn/plugin/version.BuildTime=$(BUILDTIME)"'
-
 
 MKPATH=$(abspath $(lastword $(MAKEFILE_LIST)))
 MKDIR=$(dir $(MKPATH))
@@ -75,7 +74,6 @@ para:
 vet:
 	@go vet ${PKG_LIST_VET}
 
-
 race: ## Run data race detector
 	@go test -race -short $(PKG_LIST)
 
@@ -106,12 +104,7 @@ docker-compose: ## build docker-compose for chain33 run
 docker-compose-down: ## build docker-compose for chain33 run
 	@cd build && ./docker-compose-down.sh $(proj) && cd ..
 
-clean: ## remove all the bins
-	@rm -rf $(CLI_A)
-	@rm -rf $(CLI_B)
-	@rm -rf $(CLI_C)
-	@rm -rf $(CLI_D)
-	@rm -rf $(EBRELAER)
+clean:
 	@rm -rf build/*
 
 
