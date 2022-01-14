@@ -252,6 +252,7 @@ func newHSMTransactorWithChainID(keyIndex int, from common.Address, chainID *big
 
 			return signtx, err
 		},
+		Context: context.Background(),
 	}, nil
 }
 
