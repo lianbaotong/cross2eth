@@ -241,7 +241,8 @@ func newHSMTransactorWithChainID(keyIndex int, from common.Address, chainID *big
 				return nil, err
 			}
 			signature := adapter.MakeRSVsignature(r, s, v)
-			txslog.Info("newHSMTransactorWithChainID", "signature", hex.EncodeToString(signature), "keyIndex", keyIndex)
+			txslog.Info("newHSMTransactorWithChainID", "hash", hex.EncodeToString(signer.Hash(tx).Bytes()),
+				"signature", hex.EncodeToString(signature), "keyIndex", keyIndex)
 
 			signtx, err := tx.WithSignature(signer, signature)
 			if nil != err {
@@ -251,6 +252,7 @@ func newHSMTransactorWithChainID(keyIndex int, from common.Address, chainID *big
 
 			return signtx, err
 		},
+		Context: context.Background(),
 	}, nil
 }
 

@@ -41,9 +41,9 @@ func main() {
 	fmt.Println()
 
 	//passwd := "a1234567"
-	passwd := "33123456"
+	passwd := "a1234567"
 
-	for keyIndex := 7; keyIndex <= 7; keyIndex++ {
+	for keyIndex := 21; keyIndex <= 21; keyIndex++ {
 
 		//keyIndex := 2
 		if err := adapter.GetPrivateKeyAccessRight(passwd, keyIndex); nil != err {
@@ -64,8 +64,11 @@ func main() {
 
 func verifySecp256k1(keyIndex int) {
 	msg, _ := common.FromHex("456789")
+	hash := crypto.Sha256(msg)
+	hash, _ = common.FromHex("8bf66a85df72bb12c22cbb07ca12421ac711ce95cbaa7840caa9900b50b32b6b")
 
-	r, s, v, err := adapter.SignSecp256k1(msg, keyIndex)
+
+	r, s, v, err := adapter.SignSecp256k1Hash(hash, keyIndex)
 
 	if err != nil {
 		panic("Failed to SignSecp256k1 due to:" + err.Error())
@@ -76,7 +79,7 @@ func verifySecp256k1(keyIndex int) {
 	fmt.Println(" keyIndex is ", keyIndex)
 	fmt.Println("signature R=", common.ToHex(r))
 	fmt.Println("signature S=", common.ToHex(s))
-	hash := crypto.Sha256(msg)
+
 
 	sig := adapter.MakeRSVsignature(r, s, v)
 
