@@ -68,19 +68,19 @@ func Test_ImportRestorePrivateKey(t *testing.T) {
 		}
 	}()
 
-	err = chain33Relayer.RestorePrivateKeys("123")
+	err = chain33Relayer.RestorePrivateKeyOrPasspin("123")
 	assert.NotEqual(t, chain33Common.ToHex(chain33Relayer.privateKey4Chain33.Bytes()), privateKeyStr)
 	fmt.Println("err", err)
 	assert.NoError(t, err)
 
-	err = chain33Relayer.RestorePrivateKeys(passphrase)
+	err = chain33Relayer.RestorePrivateKeyOrPasspin(passphrase)
 	assert.Equal(t, chain33Common.ToHex(chain33Relayer.privateKey4Chain33.Bytes()), privateKeyStr)
 	assert.NoError(t, err)
 
 	err = chain33Relayer.StoreAccountWithNewPassphase("new123", passphrase)
 	assert.NoError(t, err)
 
-	err = chain33Relayer.RestorePrivateKeys("new123")
+	err = chain33Relayer.RestorePrivateKeyOrPasspin("new123")
 	assert.Equal(t, chain33Common.ToHex(chain33Relayer.privateKey4Chain33.Bytes()), privateKeyStr)
 	assert.NoError(t, err)
 }
@@ -193,3 +193,4 @@ func Test_getExecerName(t *testing.T) {
 	assert.Equal(t, getExecerName("user.p.para"), "user.p.para.evm")
 	assert.Equal(t, getExecerName("user"), "user.evm")
 }
+

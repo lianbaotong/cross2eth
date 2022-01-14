@@ -146,7 +146,7 @@ func (chain33Relayer *Relayer4Chain33) RestorePrivateKeyOrPasspin(passPhase stri
 		priKey, err := driver.PrivKeyFromBytes(decryptered)
 		if nil != err {
 			errInfo := fmt.Sprintf("Failed to PrivKeyFromBytes due to:%s", err.Error())
-			relayerLog.Info("RestorePrivateKeys", "Failed to PrivKeyFromBytes:", err.Error())
+			relayerLog.Info("RestorePrivateKeyOrPasspin", "Failed to PrivKeyFromBytes:", err.Error())
 			return errors.New(errInfo)
 		}
 		chain33Relayer.rwLock.Lock()

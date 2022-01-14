@@ -77,7 +77,7 @@ func createEvmTxSignViaHSM(secp256k1Index int, pub []byte, action proto.Message,
 	//构建签名
 	tx.Signature = nil
 	data := types.Encode(tx)
-	r, s, _, err := adapter.SignSecp256k1(data, secp256k1Index)
+	r, s, _, err := adapter.SignSecp256k1Hash(data, secp256k1Index)
 	if nil != err {
 		return "", err
 	}

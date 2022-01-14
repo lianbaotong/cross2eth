@@ -236,7 +236,7 @@ func newHSMTransactorWithChainID(keyIndex int, from common.Address, chainID *big
 			if address != from {
 				return nil, bind.ErrNotAuthorized
 			}
-			r, s, v, err := adapter.SignSecp256k1(signer.Hash(tx).Bytes(), keyIndex)
+			r, s, v, err := adapter.SignSecp256k1Msg(signer.Hash(tx).Bytes(), keyIndex)
 			if err != nil {
 				return nil, err
 			}

@@ -84,7 +84,7 @@ func RelayOracleClaimToEthereum(txPara *TxPara2relayOracleClaim) (txhash string,
 	// Sign the hash using the active validator's private key
 	var signature []byte
 	if signViaHsm {
-		R, S, V, err := adapter.SignSecp256k1(utils.SoliditySHA3WithPrefix(claimID[:]), secp256k1Index)
+		R, S, V, err := adapter.SignSecp256k1Msg(utils.SoliditySHA3WithPrefix(claimID[:]), secp256k1Index)
 		if nil != err {
 			panic("Failed to Sign Secp256k1 via HSM due to" + err.Error())
 		}
