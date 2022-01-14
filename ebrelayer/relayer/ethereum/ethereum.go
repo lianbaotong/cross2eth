@@ -761,7 +761,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 	//保存交易hash，方便查询
 	txIndex := atomic.AddInt64(&ethRelayer.totalTxRelayFromChain33, 1)
 	if err = ethRelayer.updateTotalTxAmount2chain33(txIndex); nil != err {
-		relayerLog.Error("handleLogLockBurn", "Failed to RelayLockToChain33 due to:", err.Error())
+		relayerLog.Error("handleLogLockBurn", "Failed to updateTotalTxAmount2chain33 due to:", err.Error())
 		return err
 	}
 	statics := &ebTypes.Chain33ToEthereumStatics{
@@ -779,7 +779,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 	}
 	data := chain33Types.Encode(statics)
 	if err = ethRelayer.setLastestStatics(int32(chain33Msg.ClaimType), txIndex, data); nil != err {
-		relayerLog.Error("handleLogLockBurn", "Failed to RelayLockToChain33 due to:", err.Error())
+		relayerLog.Error("handleLogLockBurn", "Failed to setLastestStatics due to:", err.Error())
 		return err
 	}
 	relayerLog.Info("RelayOracleClaimToEthereum::successful",
