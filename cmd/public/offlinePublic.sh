@@ -283,7 +283,7 @@ function OfflineDeploy() {
         ethereumBridgeRegistryOnBSC="${ethereumBridgeRegistry}"
         ethereumMultisignAddrOnBSC="${ethereumMultisignAddr}"
 
-        sed -i '17,24s/BridgeRegistry=.*/BridgeRegistry="'"${ethereumBridgeRegistryOnBSC}"'"/g' "./relayer.toml"
+        sed -i '24,30s/BridgeRegistry=.*/BridgeRegistry="'"${ethereumBridgeRegistryOnBSC}"'"/g' "./relayer.toml"
     }
 
     echo -e "${GRE}=========== $FUNCNAME end ===========${NOC}"
