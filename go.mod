@@ -2,6 +2,10 @@ module github.com/lianbaotong/cross2eth
 
 go 1.15
 
+replace (
+	github.com/33cn/plugincgo => ../../33cn/plugincgo
+)
+
 require (
 	github.com/33cn/chain33 v1.65.6-0.20211220075037-0e6ddce83502
 	github.com/33cn/plugin v1.65.5-0.20211228162005-9bff4e6aa8f6

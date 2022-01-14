@@ -369,7 +369,7 @@ func (chain33Relayer *Relayer4Chain33) relayLockBurnToChain33(claim *ebTypes.Eth
 			}
 			chain33Relayer.getHsmRight = true
 		}
-		R, S, V, err := adapter.SignSecp256k1Msg(utils.SoliditySHA3WithPrefix(claimID[:]), chain33Relayer.secp256k1Index)
+		R, S, V, err := adapter.SignSecp256k1Hash(utils.SoliditySHA3WithPrefix(claimID[:]), chain33Relayer.secp256k1Index)
 		if nil != err {
 			panic("Failed to Sign Secp256k1 via HSM due to" + err.Error())
 		}
