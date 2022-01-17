@@ -25,6 +25,12 @@ function start_docker_ebrelayerProxy() {
     # 代理转账中继器中的标志位ProcessWithDraw设置为true
     sed -i 's/^ProcessWithDraw=.*/ProcessWithDraw=true/' "./relayerproxy.toml"
 
+    sed -i 's/^SignViaHsm=.*/SignViaHsm='${SignViaHsmp}'/g' "./relayerproxy.toml"
+    sed -i 's/^Secp256k1KeyIndex4Eth=.*/Secp256k1KeyIndex4Eth='${Secp256k1KeyIndex4Ethp}'/g' "./relayerproxy.toml"
+    sed -i 's/^Secp256k1KeyIndex4Chain33=.*/Secp256k1KeyIndex4Chain33='${Secp256k1KeyIndex4Chain33p}'/g' "./relayerproxy.toml"
+    sed -i 's/^Chain33PubKey=.*/Chain33PubKey="'"${Chain33PubKeyp}"'"/g' "./relayerproxy.toml"
+    sed -i 's/^EthereumValidator=.*/EthereumValidator="'"${EthereumValidatorp}"'"/g' "./relayerproxy.toml"
+
     # shellcheck disable=SC2154
     docker cp "./relayerproxy.toml" "${dockerNamePrefix}_ebrelayerproxy_1":/root/relayer.toml
     docker_cp_export "${dockerNamePrefix}_ebrelayerproxy_1"
