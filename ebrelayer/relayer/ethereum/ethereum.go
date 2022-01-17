@@ -736,6 +736,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 			return errors.New("ErrGetPrivateKeyAccessRight")
 		}
 		ethRelayer.getHsmRight = true
+		relayerLog.Info("handleLogLockBurn", "Succeed to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index)
 	}
 
 	txPara := &ethtxs.TxPara2relayOracleClaim{
