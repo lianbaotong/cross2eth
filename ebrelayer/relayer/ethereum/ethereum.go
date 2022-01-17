@@ -633,10 +633,21 @@ func (ethRelayer *Relayer4Ethereum) checkBalanceEnough(addr common.Address, amou
 func (ethRelayer *Relayer4Ethereum) signTx(tx *types.Transaction, key *ecdsa.PrivateKey) (*types.Transaction, error) {
 	signer := types.NewEIP155Signer(ethRelayer.clientChainID)
 	txhash := signer.Hash(tx)
-	signature, err := crypto.Sign(txhash.Bytes(), key)
-	if err != nil {
-		return nil, err
+	var signature []byte
+	var err error
+	if ethRelayer.signViaHsm {
+		r, s, v, err := adapter.SignSecp256k1Hash(txhash.Bytes(), ethRelayer.secp256k1Index)
+		if err != nil {
+			return nil, err
+		}
+		signature = adapter.MakeRSVsignature(r, s, v)
+	} else {
+		signature, err = crypto.Sign(txhash.Bytes(), key)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	tx, err = tx.WithSignature(signer, signature)
 	if err != nil {
 		return nil, err
