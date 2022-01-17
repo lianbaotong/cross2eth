@@ -637,6 +637,10 @@ func (ethRelayer *Relayer4Ethereum) signTx(tx *types.Transaction, key *ecdsa.Pri
 	var signature []byte
 	var err error
 	if ethRelayer.signViaHsm {
+		if err := ethRelayer.getPrivateKeyAccessRight(); nil != err {
+			return nil, err
+		}
+
 		r, s, v, err := adapter.SignSecp256k1Hash(txhash.Bytes(), ethRelayer.secp256k1Index)
 		if err != nil {
 			return nil, err
@@ -743,16 +747,8 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		}
 	}
 
-	if !getHsmRight && ethRelayer.signViaHsm {
-		relayerLog.Info("handleLogLockBurn", "Try to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index,
-			"chain name", ethRelayer.name)
-		if err := adapter.GetPrivateKeyAccessRight(ethRelayer.keyPasspin, ethRelayer.secp256k1Index); nil != err {
-			relayerLog.Error("handleLogLockBurn", "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
-			return errors.New("ErrGetPrivateKeyAccessRight")
-		}
-		getHsmRight = true
-		relayerLog.Info("handleLogLockBurn", "Succeed to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index,
-			"chain name", ethRelayer.name)
+	if err := ethRelayer.getPrivateKeyAccessRight(); nil != err {
+		return err
 	}
 
 	txPara := &ethtxs.TxPara2relayOracleClaim{
@@ -1292,3 +1288,20 @@ func (ethRelayer *Relayer4Ethereum) CfgWithdraw(symbol string, feeAmount, amount
 func (ethRelayer *Relayer4Ethereum) GetName() string {
 	return ethRelayer.name
 }
+
+func (ethRelayer *Relayer4Ethereum) getPrivateKeyAccessRight() error {
+	if !getHsmRight && ethRelayer.signViaHsm {
+		relayerLog.Info("getPrivateKeyAccessRight", "Try to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index,
+			"chain name", ethRelayer.name)
+		if err := adapter.GetPrivateKeyAccessRight(ethRelayer.keyPasspin, ethRelayer.secp256k1Index); nil != err {
+			relayerLog.Error("getPrivateKeyAccessRight", "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
+			return errors.New("ErrGetPrivateKeyAccessRight")
+		}
+		getHsmRight = true
+		relayerLog.Info("getPrivateKeyAccessRight", "Succeed to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index,
+			"chain name", ethRelayer.name)
+	}
+	return nil
+}
+
+
