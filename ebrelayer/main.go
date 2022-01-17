@@ -144,6 +144,12 @@ func main() {
 		<-ch
 		cancel()
 		wg.Wait()
+		if cfg.SignViaHsm {
+			_ = adapter.ReleaeAccessRight(int(cfg.Secp256K1KeyIndex4Eth))
+			_ = adapter.ReleaeAccessRight(int(cfg.Secp256K1KeyIndex4Chain33))
+			_ = adapter.CloseHSMSession()
+		}
+
 		os.Exit(0)
 	}()
 }

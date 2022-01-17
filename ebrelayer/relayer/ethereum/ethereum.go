@@ -60,7 +60,7 @@ type Relayer4Ethereum struct {
 	signViaHsm     bool   //是否使用硬件签名
 	secp256k1Index int    //硬件签名时的私钥索引号
 	keyPasspin     string //私钥使用授权码
-	getHsmRight    bool
+
 	//硬件签名相关结束
 
 	unlockchan              chan int
@@ -91,6 +91,7 @@ type Relayer4Ethereum struct {
 
 var (
 	relayerLog = log.New("module", "ethereum_relayer")
+	getHsmRight    bool
 )
 
 const (
@@ -673,7 +674,7 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		relayerLog.Info("handleLogLockBurn", "Needn't process lock and burn for this withdraw process specified validator", ethRelayer.ethSender)
 		return nil
 	}
-	relayerLog.Info("handleLogLockBurn", "Received chain33Msg", chain33Msg, "tx hash string", common.Bytes2Hex(chain33Msg.TxHash))
+	relayerLog.Info("handleLogLockBurn", "chain Name", ethRelayer.name, "Received chain33Msg", chain33Msg, "tx hash string", common.Bytes2Hex(chain33Msg.TxHash))
 
 	// Parse the Chain33Msg into a ProphecyClaim for relay to Ethereum
 	prophecyClaim := ethtxs.Chain33MsgToProphecyClaim(*chain33Msg)
@@ -730,13 +731,16 @@ func (ethRelayer *Relayer4Ethereum) handleLogLockBurn(chain33Msg *events.Chain33
 		}
 	}
 
-	if !ethRelayer.getHsmRight && ethRelayer.signViaHsm {
+	if !getHsmRight && ethRelayer.signViaHsm {
+		relayerLog.Info("handleLogLockBurn", "Try to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index,
+			"chain name", ethRelayer.name)
 		if err := adapter.GetPrivateKeyAccessRight(ethRelayer.keyPasspin, ethRelayer.secp256k1Index); nil != err {
 			relayerLog.Error("handleLogLockBurn", "Failed to GetPrivateKeyAccessRight via HSM due to", err.Error())
 			return errors.New("ErrGetPrivateKeyAccessRight")
 		}
-		ethRelayer.getHsmRight = true
-		relayerLog.Info("handleLogLockBurn", "Succeed to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index)
+		getHsmRight = true
+		relayerLog.Info("handleLogLockBurn", "Succeed to GetPrivateKeyAccessRight via for index", ethRelayer.secp256k1Index,
+			"chain name", ethRelayer.name)
 	}
 
 	txPara := &ethtxs.TxPara2relayOracleClaim{

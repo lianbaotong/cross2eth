@@ -282,6 +282,7 @@ func (chain33Relayer *Relayer4Chain33) handleBurnLockWithdrawEvent(evmEventType 
 		relayerLog.Error("handleBurnLockWithdrawEvent", "No bridgeSymbol2EthChainName", chain33Msg.Symbol)
 		return errors.New("ErrNoEthChainName4BridgeSymbol")
 	}
+	relayerLog.Info("handleBurnLockWithdrawEvent", "Going to send  to chain with name", chainName)
 
 	channel, ok := chain33Relayer.chain33MsgChan[chainName]
 	if !ok {
