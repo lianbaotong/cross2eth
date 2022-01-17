@@ -90,8 +90,8 @@ type Relayer4Ethereum struct {
 }
 
 var (
-	relayerLog = log.New("module", "ethereum_relayer")
-	getHsmRight    bool
+	relayerLog  = log.New("module", "ethereum_relayer")
+	getHsmRight bool
 )
 
 const (
@@ -558,34 +558,56 @@ func (ethRelayer *Relayer4Ethereum) handleLogWithdraw(chain33Msg *events.Chain33
 		err = errors.New("ErrBalanceNotEnough")
 		return
 	}
-	//param: from,to,evm-packdata,amount
-	//交易构造
-	tx, err := ethtxs.NewTransferTx(ethRelayer.clientSpec, ethRelayer.ethSender, toAddr, intputData, value, ethRelayer.Addr2TxNonce)
-	if err != nil {
-		relayerLog.Error("handleLogWithdraw", "newTx err", err)
-		err = errors.New("ErrNewTx")
-		return
-	}
 
-	//交易签名
-	signedTx, err := ethRelayer.signTx(tx, ethRelayer.privateKey4Ethereum)
-	if err != nil {
-		relayerLog.Error("handleLogWithdraw", "SignTx err", err)
-		err = errors.New("ErrSignTx")
-		return
+	if ethRelayer.signViaHsm {
+		txPara := &ethtxs.TxPara2relayOracleClaim{
+			OracleInstance: ethRelayer.x2EthContracts.Oracle,
+			Client:         ethRelayer.clientSpec,
+			Sender:         ethRelayer.ethSender,
+			TokenOnEth:     tokenAddr,
+			Claim:          ethtxs.Chain33MsgToProphecyClaim(*chain33Msg),
+			PrivateKey:     ethRelayer.privateKey4Ethereum,
+			Addr2TxNonce:   ethRelayer.Addr2TxNonce,
+			SignViaHsm:     ethRelayer.signViaHsm,
+			Secp256k1Index: ethRelayer.secp256k1Index,
+		}
+		txhash, err := ethtxs.RelayOracleClaimToEthereum(txPara)
+		if nil != err {
+			relayerLog.Error("handleLogWithdraw", "RelayOracleClaimToEthereum failed due to", err.Error())
+			return
+		}
+		relayerLog.Info("handleLogWithdraw", "RelayOracleClaimToEthereum with tx hash", txhash)
+		withdrawTx.TxHashOnEthereum = txhash
+	} else {
+		//param: from,to,evm-packdata,amount
+		//交易构造
+		tx, err := ethtxs.NewTransferTx(ethRelayer.clientSpec, ethRelayer.ethSender, toAddr, intputData, value, ethRelayer.Addr2TxNonce)
+		if err != nil {
+			relayerLog.Error("handleLogWithdraw", "newTx err", err)
+			err = errors.New("ErrNewTx")
+			return
+		}
+
+		//交易签名
+		signedTx, err := ethRelayer.signTx(tx, ethRelayer.privateKey4Ethereum)
+		if err != nil {
+			relayerLog.Error("handleLogWithdraw", "SignTx err", err)
+			err = errors.New("ErrSignTx")
+			return
+		}
+		//交易发送
+		err = ethRelayer.clientSpec.SendTransaction(timeout, signedTx)
+		if err != nil {
+			relayerLog.Error("handleLogWithdraw", "SendTransaction err", err)
+			err = errors.New("ErrSendTransaction")
+			return
+		}
+		relayerLog.Info("handleLogWithdraw", "SendTransaction Hash", signedTx.Hash())
+		withdrawTx.TxHashOnEthereum = signedTx.Hash().String()
 	}
-	//交易发送
-	err = ethRelayer.clientSpec.SendTransaction(timeout, signedTx)
-	if err != nil {
-		relayerLog.Error("handleLogWithdraw", "SendTransaction err", err)
-		err = errors.New("ErrSendTransaction")
-		return
-	}
-	relayerLog.Info("handleLogWithdraw", "SendTransaction Hash", signedTx.Hash())
 
 	withdrawTx.Status = int32(ethtxs.WDPending)
 	withdrawTx.StatusDescription = ethtxs.WDPending.String()
-	withdrawTx.TxHashOnEthereum = signedTx.Hash().String()
 
 	return
 }
