@@ -115,7 +115,7 @@ source "./offlinePublic.sh"
     chain33Validatorsp="1Hf1wnnr6XaYy5Sf3HhAfT4N8JYV4sMh9J"
     chain33ValidatorKeysp="0x1dadb7cbad8ea3f968cfad40ac32981def6215690618e62c48e816e7c732a8c2"
 
-    SignViaHsm=true
+    SignViaHsm=false
 
     SignViaHsma=${SignViaHsm}
     Secp256k1KeyIndex4Etha=21
