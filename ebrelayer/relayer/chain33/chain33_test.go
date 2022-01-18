@@ -11,7 +11,6 @@ import (
 	"testing"
 	"time"
 
-	chain33Common "github.com/33cn/chain33/common"
 	dbm "github.com/33cn/chain33/common/db"
 	"github.com/33cn/chain33/types"
 	"github.com/33cn/chain33/util/testnode"
@@ -40,17 +39,30 @@ var (
 )
 
 func Test_ImportRestorePrivateKey(t *testing.T) {
-	mock33 := newMock33()
+	var ret = types.ReplySubscribePush{IsOk: true, Msg: ""}
+	var he = types.Header{Height: 10000}
+
+	mockapi := &mocks.QueueProtocolAPI{}
+	// 这里对需要mock的方法打桩,Close是必须的，其它方法根据需要
+	mockapi.On("Close").Return()
+	mockapi.On("AddPushSubscribe", mock.Anything).Return(&ret, nil)
+	mockapi.On("GetLastHeader", mock.Anything).Return(&he, nil)
+
+	mock33 := testnode.New("", mockapi)
 	defer mock33.Close()
+	rpcCfg := mock33.GetCfg().RPC
+	// 这里必须设置监听端口，默认的是无效值
+	rpcCfg.JrpcBindAddr = "127.0.0.1:8801"
+	mock33.GetRPC().Listen()
+
 	_, _, _, x2EthDeployInfo, err := setup.DeployContracts()
 	require.NoError(t, err)
 	chain33Relayer := newChain33Relayer(x2EthDeployInfo, "127.0.0.1:60000")
 
 	err = chain33Relayer.ImportPrivateKey(passphrase, privateKeyStr)
 	assert.NoError(t, err)
-	//assert.Equal(t, addr, accountAddr)
 
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 
 	addr, err := chain33Relayer.GetAccountAddr()
 	assert.NoError(t, err)
@@ -68,21 +80,22 @@ func Test_ImportRestorePrivateKey(t *testing.T) {
 		}
 	}()
 
-	err = chain33Relayer.RestorePrivateKeyOrPasspin("123")
-	assert.NotEqual(t, chain33Common.ToHex(chain33Relayer.privateKey4Chain33.Bytes()), privateKeyStr)
-	fmt.Println("err", err)
+	privateKey, _, err := chain33Relayer.GetAccount("123")
+	assert.NotEqual(t, privateKey, privateKeyStr)
 	assert.NoError(t, err)
 
-	err = chain33Relayer.RestorePrivateKeyOrPasspin(passphrase)
-	assert.Equal(t, chain33Common.ToHex(chain33Relayer.privateKey4Chain33.Bytes()), privateKeyStr)
+	privateKey, _, err = chain33Relayer.GetAccount(passphrase)
+	assert.Equal(t, privateKey, privateKeyStr)
 	assert.NoError(t, err)
 
 	err = chain33Relayer.StoreAccountWithNewPassphase("new123", passphrase)
 	assert.NoError(t, err)
 
-	err = chain33Relayer.RestorePrivateKeyOrPasspin("new123")
-	assert.Equal(t, chain33Common.ToHex(chain33Relayer.privateKey4Chain33.Bytes()), privateKeyStr)
+	privateKey, _, err = chain33Relayer.GetAccount("new123")
+	assert.Equal(t, privateKey, privateKeyStr)
 	assert.NoError(t, err)
+
+	time.Sleep(20 * time.Millisecond)
 }
 
 func newChain33Relayer(x2EthDeployInfo *ethtxs.X2EthDeployInfo, pushBind string) *Relayer4Chain33 {
@@ -164,26 +177,6 @@ func initCfg(path string) *relayerTypes.RelayerConfig {
 	return &cfg
 }
 
-func newMock33() *testnode.Chain33Mock {
-	var ret = types.ReplySubscribePush{IsOk: true, Msg: ""}
-	var he = types.Header{Height: 10000}
-
-	mockapi := &mocks.QueueProtocolAPI{}
-	// 这里对需要mock的方法打桩,Close是必须的，其它方法根据需要
-	mockapi.On("Close").Return()
-	mockapi.On("AddPushSubscribe", mock.Anything).Return(&ret, nil)
-	mockapi.On("GetLastHeader", mock.Anything).Return(&he, nil)
-
-	mock33 := testnode.New("", mockapi)
-	//defer mock33.Close()
-	rpcCfg := mock33.GetCfg().RPC
-	// 这里必须设置监听端口，默认的是无效值
-	rpcCfg.JrpcBindAddr = "127.0.0.1:8801"
-	mock33.GetRPC().Listen()
-
-	return mock33
-}
-
 func Test_getExecerName(t *testing.T) {
 	assert.Equal(t, getExecerName(""), "evm")
 	assert.Equal(t, getExecerName("user.p.para."), "user.p.para.evm")
@@ -193,4 +186,3 @@ func Test_getExecerName(t *testing.T) {
 	assert.Equal(t, getExecerName("user.p.para"), "user.p.para.evm")
 	assert.Equal(t, getExecerName("user"), "user.evm")
 }
-

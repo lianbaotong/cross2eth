@@ -8,10 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
-
-	"github.com/stretchr/testify/assert"
-
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -21,6 +17,8 @@ import (
 	"github.com/lianbaotong/cross2eth/contracts/test/setup"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/ethereum/ethtxs"
 	"github.com/lianbaotong/cross2eth/ebrelayer/relayer/events"
+	"github.com/lianbaotong/cross2eth/ebrelayer/utils"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
