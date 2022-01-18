@@ -115,31 +115,33 @@ source "./offlinePublic.sh"
     chain33Validatorsp="1Hf1wnnr6XaYy5Sf3HhAfT4N8JYV4sMh9J"
     chain33ValidatorKeysp="0x1dadb7cbad8ea3f968cfad40ac32981def6215690618e62c48e816e7c732a8c2"
 
-    SignViaHsma=true
+    SignViaHsm=false
+
+    SignViaHsma=${SignViaHsm}
     Secp256k1KeyIndex4Etha=21
     Secp256k1KeyIndex4Chain33a=25
     Chain33PubKeya="0x02b8eff229e59682ddd087158a2a44179b9083900b6f30c7ea7aac6aa5856f43c3"
     EthereumValidatora="0x92C8b16aFD6d423652559C6E266cBE1c29Bfd84f"
 
-    SignViaHsmb=true
+    SignViaHsmb=${SignViaHsm}
     Secp256k1KeyIndex4Ethb=22
     Secp256k1KeyIndex4Chain33b=26
     Chain33PubKeyb="0x03a51a459264d92a29062b1c0448e2f32603e0d86c6318987c00769e4f88ab7f60"
     EthereumValidatorb="0x0df9a824699bc5878232c9e612fe1a5346a5a368"
 
-    SignViaHsmc=true
+    SignViaHsmc=${SignViaHsm}
     Secp256k1KeyIndex4Ethc=23
     Secp256k1KeyIndex4Chain33c=27
     Chain33PubKeyc="0x02a77f69080f0c9949c05062bfcb8258cea19d858a956d173e44ae427b5180f41a"
     EthereumValidatorc="0xcb074cb21cdddf3ce9c3c0a7ac4497d633c9d9f1"
 
-    SignViaHsmd=true
+    SignViaHsmd=${SignViaHsm}
     Secp256k1KeyIndex4Ethd=24
     Secp256k1KeyIndex4Chain33d=28
     Chain33PubKeyd="0x0334b08fde8c1272ca60df23ca3f42e8cef309198b0c0f2132c643d98b51c513ef"
     EthereumValidatord="0xd9dab021e74ecf475788ed7b61356056b2095830"
 
-    SignViaHsmp=true
+    SignViaHsmp=${SignViaHsm}
     Secp256k1KeyIndex4Ethp=29
     Secp256k1KeyIndex4Chain33p=30
     Chain33PubKeyp="0x02b19b08e84247062ba44382c0552ed444da9aaa5f901f1848aca39e815f6f3a35"
@@ -201,8 +203,11 @@ function updata_toml_start_bcd() {
         eval chain33ValidatorKey=\$chain33ValidatorKey${name}
         eval ethValidatorAddrKey=\$ethValidatorAddrKey${name}
 
-        docker_relayer_ip=$(get_docker_addr "${dockerNamePrefix}_ebrelayer${name}_1")
-        init_validator_relayer_hsm "${CLI}" "${validatorPwd}" "${docker_relayer_ip}"
+        if [[ ${SignViaHsm} == ture ]]; then
+            init_validator_relayer_hsm "${CLI}" "${validatorPwd}"
+        else
+            init_validator_relayer "${CLI}" "${validatorPwd}" "${chain33ValidatorKey}" "${ethValidatorAddrKey}"
+        fi
     done
 }
 

@@ -328,7 +328,7 @@ function import_private_passpin() {
     check_import_private_passpin "${respEth}" "ImportEthereumPrivateKeyPasspin"
 }
 
-# init $1 CLI $2 pwd $3 docker_relayer_ip
+# init $1 CLI $2 pwd
 function init_validator_relayer_hsm() {
     local CLI=$1
     local pwd=$2
@@ -349,9 +349,11 @@ function init_validator_relayer_hsm() {
 # shellcheck disable=SC2120
 function InitRelayerA() {
     echo -e "${GRE}=========== $FUNCNAME begin ===========${NOC}"
-
-    docker_relayer_ip=$(get_docker_addr "${dockerNamePrefix}_ebrelayera_1")
-    init_validator_relayer_hsm "${CLIA}" "${validatorPwd}" "${docker_relayer_ip}"
+    if [[ ${SignViaHsm} == ture ]]; then
+        init_validator_relayer_hsm "${CLIA}" "${validatorPwd}"
+    else
+        init_validator_relayer "${CLIA}" "${validatorPwd}" "${chain33ValidatorKeya}" "${ethValidatorAddrKeya}"
+    fi
 
     ${CLIA} chain33 multisign set_multiSign -a "${chain33MultisignAddr}"
 

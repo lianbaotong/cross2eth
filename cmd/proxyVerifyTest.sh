@@ -37,8 +37,11 @@ function start_docker_ebrelayerProxy() {
     start_docker_ebrelayer "${dockerNamePrefix}_ebrelayerproxy_1" "/root/ebrelayer" "./ebrelayerproxy.log"
     sleep 1
 
-    docker_relayer_ip=$(get_docker_addr "${dockerNamePrefix}_ebrelayerproxy_1")
-    init_validator_relayer_hsm "${CLIP}" "${validatorPwd}" "${docker_relayer_ip}"
+    if [[ ${SignViaHsm} == ture ]]; then
+        init_validator_relayer_hsm "${CLIP}" "${validatorPwd}"
+    else
+        init_validator_relayer "${CLIP}" "${validatorPwd}" "${chain33ValidatorKeyp}" "${ethValidatorAddrKeyp}"
+    fi
 }
 
 function setWithdraw_ethereum() {
