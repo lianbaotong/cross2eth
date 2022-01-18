@@ -349,7 +349,7 @@ function init_validator_relayer_hsm() {
 # shellcheck disable=SC2120
 function InitRelayerA() {
     echo -e "${GRE}=========== $FUNCNAME begin ===========${NOC}"
-    if [[ ${SignViaHsm} == ture ]]; then
+    if [[ ${SignViaHsm} == true ]]; then
         init_validator_relayer_hsm "${CLIA}" "${validatorPwd}"
     else
         init_validator_relayer "${CLIA}" "${validatorPwd}" "${chain33ValidatorKeya}" "${ethValidatorAddrKeya}"
