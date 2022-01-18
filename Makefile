@@ -78,7 +78,7 @@ race: ## Run data race detector
 	@go test -race -short $(PKG_LIST)
 
 test: ## Run unittests
-	@go test -race $(PKG_LIST)
+	@go test -parallel=8 -race  `go list ./...| grep -v "pbft"`
 
 fmt: fmt_proto fmt_shell ## go fmt
 	@go fmt ./...
