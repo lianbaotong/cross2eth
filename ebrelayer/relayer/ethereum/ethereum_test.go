@@ -86,7 +86,6 @@ func Test_All(t *testing.T) {
 	test_SetBridgeRegistryAddr(t)
 	test_CreateBridgeToken(t)
 	test_BurnBty(t)
-	test_RestorePrivateKeys(t)
 	test_setWithdrawFee(t)
 }
 
@@ -128,11 +127,6 @@ func test_Lock(t *testing.T) {
 		simCommit()
 	}
 	time.Sleep(time.Duration(ethRelayer.fetchHeightPeriodMs) * time.Millisecond)
-
-	//balance, err := ethRelayer.ShowLockStatics("")
-	//require.Nil(t, err)
-	//assert.Equal(t, balance, "50")
-	//simCommit()
 }
 
 func test_IsValidatorActive(t *testing.T) {
@@ -377,43 +371,6 @@ func test_BurnBty(t *testing.T) {
 		ethRelayer.procBridgeBankLogs(*vLog)
 	}
 	simCommit()
-}
-
-func test_RestorePrivateKeys(t *testing.T) {
-	_, err := ethRelayer.ImportPrivateKey(passphrase, ethPrivateKeyStr)
-	require.Nil(t, err)
-	time.Sleep(time.Duration(ethRelayer.fetchHeightPeriodMs) * time.Millisecond)
-	simCommit()
-
-	go func() {
-		for range ethRelayer.unlockchan {
-		}
-	}()
-	//ethRelayer.rwLock.RLock()
-	//temp := ethRelayer.privateKey4Ethereum
-	//ethRelayer.rwLock.RUnlock()
-	//
-	//err = ethRelayer.RestorePrivateKeys("123")
-	//ethRelayer.rwLock.RLock()
-	//assert.NotEqual(t, common.Bytes2Hex(crypto.FromECDSA(temp)), common.Bytes2Hex(crypto.FromECDSA(ethRelayer.privateKey4Ethereum)))
-	//ethRelayer.rwLock.RUnlock()
-	//require.Nil(t, err)
-	//
-	//err = ethRelayer.RestorePrivateKeys(passphrase)
-	//ethRelayer.rwLock.RLock()
-	//assert.Equal(t, common.Bytes2Hex(crypto.FromECDSA(temp)), common.Bytes2Hex(crypto.FromECDSA(ethRelayer.privateKey4Ethereum)))
-	//ethRelayer.rwLock.RUnlock()
-	//require.Nil(t, err)
-	//
-	//err = ethRelayer.StoreAccountWithNewPassphase("new123", passphrase)
-	//require.Nil(t, err)
-	//
-	//err = ethRelayer.RestorePrivateKeys("new123")
-	//ethRelayer.rwLock.RLock()
-	//assert.Equal(t, common.Bytes2Hex(crypto.FromECDSA(temp)), common.Bytes2Hex(crypto.FromECDSA(ethRelayer.privateKey4Ethereum)))
-	//ethRelayer.rwLock.RUnlock()
-	//require.Nil(t, err)
-	//simCommit()
 }
 
 func test_setWithdrawFee(t *testing.T) {
